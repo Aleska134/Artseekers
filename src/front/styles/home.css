@@ -1,0 +1,176 @@
+.animate-charcter {
+  background-image: linear-gradient(
+    -225deg,
+    #1078ce 0%,
+    #0b4877 29%,
+    #e79c08 67%,
+    #deb887 100%
+  );
+  background-size: auto auto;
+  background-clip: border-box;
+  background-size: 200% auto;
+  color: #fff;
+  background-clip: text;
+  text-emphasis-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textclip 2s linear infinite;
+  display: inline-block;
+  font-size: 80px;
+  margin-top: 55px;
+}
+
+/* Pantallas pequeñas (teléfonos) */
+@media (max-width: 600px) {
+  .info p {
+    font-size: 14px; 
+    margin-bottom: 1rem;
+    text-align: justify; /* O 'left', según lo que mejor se vea en dispositivos móviles */
+  }
+  .carousel img {
+    height: 100px; /* Un valor más pequeño para pantallas más pequeñas */
+  }
+
+}
+
+/* Media query para pantallas medianas a grandes */
+@media (min-width: 600px) {
+  .animate-charcter {
+    font-size: 190px; /* Ajusta esto según necesites */
+    margin-top: 20px;
+  }
+  
+}
+
+.info {
+  font-size: 1.3rem; 
+ 
+}
+
+/* Media query para pantallas muy grandes */
+@media (min-width: 1200px) {
+  .animate-charcter {
+    font-size: 190px; 
+  }
+}
+
+@keyframes textclip {
+  to {
+    background-position: 200% center;
+  }
+}
+
+#list {
+  body {
+    font-family: sans-serif;
+    font-family: "Quicksand", sans-serif;
+    color: #333;
+    text-indent: 1.5em;
+    font-size: 1.1em;
+    background-color: #eee;
+    width: 96vw;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  span b {
+    color: #000;
+  }
+  h1 {
+    font-size: 3em;
+    margin-bottom: 0.2em;
+    color: #29627d;
+    text-align: center;
+  }
+  div {
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    text-align: center;
+  }
+  div:focus {
+    outline: none;
+  }
+  div div {
+    position: relative;
+    background-color: burlywood;
+    color: #fff;
+    margin: 16px;
+    border-radius: 999px;
+    line-height: 3em;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+      rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+  }
+  div b {
+    text-decoration: line-through;
+    font-weight: normal;
+    display: none;
+  }
+}
+
+.rowAboutUs {
+  margin: 5vw;
+  padding: 5vw;
+  /* margin: 100px; */
+  background-color: rgba(222, 184, 135, 0.7);
+  /* padding: 50px; */
+  border: 15px solid black;
+  box-shadow: 10px 10px 20px rgba(17, 165, 201, 0.4);
+}
+
+.lineHome {
+  background-color: burlywood;
+}
+
+.carousel {
+  /* transform: scale(0.5);
+  height: 900px;
+  width: 900px;
+  align-items: center;
+  margin-left: 20%; */
+  max-width:35vw; /* Ajusta a la anchura máxima deseada */
+  margin: auto; /* Esto centra el carrusel horizontalmente */
+  position: relative;
+}
+.carousel img {
+  max-width: 100%; /* Hace que las imágenes sean responsivas */
+  height: auto; /* Mantiene la proporción de las imágenes */
+}
+.carousel-control-prev, .carousel-control-next {
+  position: absolute;
+  top: 50%; /* Centra verticalmente */
+  transform: translateY(-50%); /* Ajusta la posición para que 'top' se refiera al centro de las flechas */
+}
+.carousel-control-prev {
+  left: 0% !important;
+}
+
+.carousel-control-next {
+  right: 0% !important;
+}
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  /* Ajustes de tamaño aquí, por ejemplo: */
+  width: 30px;
+  height: 30px;
+}
+
+
+/* .backgroundHome {
+  background-image: url(https://64.media.tumblr.com/d307e7b2d350aac140ab2605ffa80c11/tumblr_ou89v41vtr1s0e6wno1_500.jpg);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background: #deb887; */
+/* Chrome 10-25, Safari 5.1-6 */
+/* background: -webkit-linear-gradient(
+    to right,
+    rgba(222, 184, 135, 1),
+    rgba(166, 193, 238, 1)
+  ); */
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+/* background: linear-gradient(
+    to right,
+    rgba(222, 184, 135, 1),
+    rgba(166, 193, 238, 1)
+  );
+} */
