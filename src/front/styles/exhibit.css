@@ -1,0 +1,85 @@
+/*
+    home.css: This website contains selectors only used in home.css
+
+    All pages share the styles on index.css but you should create 
+    one more css for each page that will contain the selected used 
+    on that page only (the ones not reused in other pages).
+*/
+
+
+#main{
+    background: #DEB887;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1))
+}
+
+
+.footer {
+    flex-shrink: 0;
+    bottom: 0;
+    background-color: 
+    #29627D;
+ 
+  }
+
+  .navbar {
+    background-color: 
+    #29627D;
+    justify-content: flex-start;
+  }
+
+
+
+.navbar-logo {
+    width: 100px;
+    height: 100px;
+    padding-right: 1%;
+}
+
+
+
+.rowExhibit {
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    margin: 45px 75px;
+    margin-top: 100px;
+    max-width: 100%;
+    flex-wrap: wrap;
+
+}
+
+
+
+.art-poster {
+    border: 10px solid black;
+    padding: 75px 50px;
+    width: 65%;
+    
+}
+
+.art-poster img {
+    object-fit: contain;
+}
+
+.card-body {
+    display: flex;
+}
+.card-text {
+    text-align: left;
+}
+
+.exhibit-button {
+    font-size: 10px;
+    /* color: red; */
+    height: 75%;
+    margin-left: 100px;
+}
+
+.exhibit-button.favorited, .fas.fa-heart.favorited {
+    color: red;
+}
+
+
