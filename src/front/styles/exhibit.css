@@ -1,0 +1,70 @@
+/*
+    home.css: This website contains selectors only used in home.css
+
+    All pages share the styles on index.css but you should create 
+    one more css for each page that will contain the selected used 
+    on that page only (the ones not reused in other pages).
+*/
+
+
+.footer {
+    flex-shrink: 0;
+    bottom: 0;
+    background-color: 
+    #29627D;
+ 
+  }
+
+  .navbar {
+    background-color: 
+    #29627D;
+    justify-content: flex-start;
+  }
+
+
+
+.navbar-logo {
+    width: 100px;
+    height: 100px;
+    padding-right: 1%;
+}
+
+
+
+.rowExhibit {
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    margin: 45px 75px;
+    margin-top: 100px;
+    max-width: 100%;
+    flex-wrap: wrap;
+
+}
+
+
+
+.art-poster {
+    border: 10px solid black;
+    padding: 75px 50px;
+    width: 65%;
+    
+}
+
+.art-poster img {
+    object-fit: contain;
+}
+
+.card-body {
+    display: flex;
+}
+.card-text {
+    text-align: left;
+}
+
+button {
+    font-size: 10px;
+    height: 50%;
+    margin-left: 100px;
+}
+

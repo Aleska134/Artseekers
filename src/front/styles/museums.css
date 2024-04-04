@@ -1,0 +1,128 @@
+/* .footer {
+    flex-shrink: 0;
+    bottom: 0;
+    background-color: 
+    #29627D;
+ 
+  }
+
+  .navbar {
+    background-color: 
+    #29627D;
+    justify-content: flex-start;
+  }
+
+
+
+.navbar-logo {
+    width: 100px;
+    height: 100px;
+    padding-right: 1%;
+}
+
+.jumbotron{
+    display: flex;
+    text-align: center;
+    justify-content: space-around;
+    margin: auto;
+    padding: 20% 47%;
+    height: 10px;
+    width: 200px;
+    border: 2px black solid;
+}
+
+.history {
+    font-size: 8px;
+    border: 2px black solid;
+    margin: 5px;
+    width: 100%;   
+}
+
+.history-title {
+    text-decoration: underline;
+    margin: 25px;
+} */
+
+/* here */
+
+/* .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 2px solid #000;
+    z-index: 1000; /* Ensure it's above other content */
+
+
+/* .popup-inner {
+    max-width: 600px;
+    overflow-y: auto;
+}
+
+.popup-inner button {
+    display: block;
+    margin: 0 auto;
+} */ 
+
+/* test */
+.content-container {
+    padding-bottom: 50px; /* Adds space at the bottom inside the container */
+}
+
+.image-frame-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px; /* Adds space below the image container */
+}
+
+.image-frame {
+    border: 5px solid black;
+    display: inline-block;
+    position: relative;
+}
+
+.image-frame img {
+    width: 200px; /* Adjust width as needed */
+    height: auto;
+    display: block;
+}
+
+.image-title {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 5px 10px;
+    border-top: 2px solid #000;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    z-index: 1000;
+    border: 2px solid #000;
+    max-width: 600px;
+    overflow-y: auto;
+}
+
+.popup-inner h3 {
+    margin-bottom: 20px;
+}
+
+.popup-inner p {
+    margin-bottom: 40px;
+}
+
+.popup-inner button {
+    display: inline-block;
+    margin: 0 auto;
+}
