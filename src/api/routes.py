@@ -1,7 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, Blueprint
 from api.models import db, User, Exhibits, Departments
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -11,16 +11,6 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
-
-
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-
-    return jsonify(response_body), 200
 
 @api.route('/login', methods=['POST'])
 def sign_in():
@@ -88,17 +78,32 @@ def private():
     return jsonify(response_body), 200
 
 @api.route('/exhibits-and-departments', methods=['GET'])
-def exhibits():  
-    exhibits = Exhibits.query.all()
-    departments = Departments.query.all()
-    serialized_exhibits = [exhibit.serialize() for exhibit in exhibits]
-    serialized_departments = [department.serialize() for department in departments]
-    for exhibit in serialized_exhibits:
-        for department in serialized_departments:
-            if exhibit['department_museum_id'] == department['department_museum_id']:
-                exhibit["department_name"] = department["name"]
+def get_exhibits_and_departments():  
+    try:
+        exhibits = db.session.query(Exhibits).all()
 
-    return jsonify({'message' : 'This is the list of all the exhibits', 'exhibits' : serialized_exhibits, 'departments' : serialized_departments} ),200
+        departments = (
+            db.session.query(Departments)
+            .join(Exhibits, Exhibits.department_museum_id == Departments.department_museum_id)
+            .distinct()
+            .all()
+        )
+
+        dept_map = {d.department_museum_id: d.name for d in departments}
+
+        serialized_exhibits = []
+        for exhibit in exhibits:
+            exhibit_data = exhibit.serialize()
+            exhibit_data["department_name"] = dept_map.get(exhibit.department_museum_id, "Unknown")
+            serialized_exhibits.append(exhibit_data)
+
+        return jsonify({
+            "message": "Success",
+            "exhibits": serialized_exhibits,
+            "departments": [d.serialize() for d in departments]
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @api.route('/getUsers', methods=['GET'])
 def get_all_Users():

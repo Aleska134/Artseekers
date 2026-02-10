@@ -49,7 +49,7 @@ class Exhibits(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     exhibit_museum_id = db.Column(db.Integer, nullable=False)
     exhibit_name = db.Column(db.String(250), nullable=False)
-    department_museum_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
+    department_museum_id = db.Column(db.Integer, nullable=True)
     primary_image_small = db.Column(db.String(250), nullable=False)
     region = db.Column(db.String(100),nullable=True)
     culture = db.Column(db.String(100),nullable=True)

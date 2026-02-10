@@ -23,19 +23,30 @@ def has_no_empty_params(rule):
 def generate_sitemap(app):
     links = ['/admin/']
     for rule in app.url_map.iter_rules():
-        # Filter out rules we can't navigate to in a browser
-        # and rules that require parameters
+        # Filtramos rutas que no se pueden navegar o que requieren parámetros
         if "GET" in rule.methods and has_no_empty_params(rule):
             url = url_for(rule.endpoint, **(rule.defaults or {}))
             if "/admin/" not in url:
                 links.append(url)
 
     links_html = "".join(["<li><a href='" + y + "'>" + y + "</a></li>" for y in links])
+    
     return """
-        <div style="text-align: center;">
-        <img style="max-height: 80px" src='https://storage.googleapis.com/breathecode/boilerplates/rigo-baby.jpeg' />
-        <h1>Rigo welcomes you to your API!!</h1>
-        <p>API HOST: <script>document.write('<input style="padding: 5px; width: 300px" type="text" value="'+window.location.href+'" />');</script></p>
-        <p>Start working on your project by following the <a href="https://start.4geeksacademy.com/starters/full-stack" target="_blank">Quick Start</a></p>
-        <p>Remember to specify a real endpoint path like: </p>
-        <ul style="text-align: left;">"""+links_html+"</ul></div>"
+        <div style="text-align: center; font-family: sans-serif; padding-top: 50px; color: #333;">
+            <img style="max-height: 120px; border-radius: 8px;" src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/The_Met_logo.svg/1024px-The_Met_logo.svg.png' />
+            <h1>Artseekers API</h1>
+            <p style="color: #666;">Backend Server for the Metropolitan Museum of Art Collection Explorer</p>
+            
+            <div style="background: #f4f4f4; padding: 20px; display: inline-block; border-radius: 10px; margin-top: 20px; border: 1px solid #ddd;">
+                <p><strong>API Endpoint Host:</strong></p>
+                <code><script>document.write(window.location.href);</script></code>
+            </div>
+
+            <h3 style="margin-top: 40px;">Available Endpoints:</h3>
+            <ul style="list-style: none; padding: 0; font-size: 18px;">
+                """ + links_html + """
+            </ul>
+            <hr style="width: 50%; margin-top: 50px; border: 0; border-top: 1px solid #eee;" />
+            <p style="font-size: 12px; color: #999;">Portfolio Project - Computer Science Student</p>
+        </div>
+    """
