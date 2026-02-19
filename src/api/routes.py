@@ -57,25 +57,16 @@ def sign_up():
 
     return jsonify(response_body), 201
 
-@api.route('/private', methods=['GET'])
+@api.route('/user/profile', methods=['GET']) # Cambiado de /private a /user/profile
 @jwt_required()
-def private():
-    # Access the identity of the current user with get_jwt_identity
-    print("private is running")
+def get_my_profile():
     email = get_jwt_identity()
-    user=User.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).first()
     if user:
-        # favorites = Favorite.query.filter_by(user_id=user.id).all()
-        response_body = user.serialize()
-            # {
-            # "message": f"Logged in as: {user.email} Secret view. shhhh it's a secret",
-            # "email": user.email,
-            
+        # Aquí ya se incluyen los favoritos gracias al serialize() de tu modelo
+        return jsonify(user.serialize()), 200
+    return jsonify({"message": "User not found"}), 404
 
-            # "favorites": list(map(lambda x: x.serialize(), favorites))
-        # }
-
-    return jsonify(response_body), 200
 
 @api.route('/exhibits-and-departments', methods=['GET'])
 def get_exhibits_and_departments():  
@@ -105,19 +96,20 @@ def get_exhibits_and_departments():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@api.route('/getUsers', methods=['GET'])
-def get_all_Users():
+
+@api.route('/users', methods=['GET'])
+def get_all_users():
     users = User.query.all()
-    request_body = list(map(lambda x:x.serialize(), users))
+    return jsonify([u.serialize() for u in users]), 200
 
-    return jsonify(request_body), 200
-
-# @api.route('/getSingleUser/<int:user_id>', methods=['GET'])
-# def get_Single_User(user_id): 
-#     user = User.query.filter_by(id = user_id).first()
-#     request_body = user.serialize()
-
-#     return jsonify(request_body), 200
+@api.route('/users/<int:user_id>', methods=['GET']) 
+def get_single_user(user_id): 
+    user = User.query.get(user_id)
+    
+    if user is None:
+        return jsonify({"message": "User not found"}), 404
+        
+    return jsonify(user.serialize()), 200
 
 @api.route('/single/<int:exhibit_id>', methods=['GET'])
 @jwt_required()

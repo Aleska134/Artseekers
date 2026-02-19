@@ -16,21 +16,23 @@ app.url_map.strict_slashes = False
 # 1. Configuración de Base de Datos
 db_url = os.getenv("DATABASE_URL")
 
-if db_url is not None:
+# Detectamos si estamos en Codespaces (desarrollo) o en la nube (producción)
+if db_url and "postgresql" in db_url:
+    # Si la URL es de Postgres, estamos en producción (Render/Heroku)
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
 else:
-    # 1. Ruta absoluta desde la raíz del sistema de archivos
-    # Esto dará: /workspaces/Artseekers/src/instance/test.db
+    # Estamos en LOCAL (Codespaces) -> Forzamos la ruta absoluta de 4 barras
+    # Esto ignora el sqlite:/// del .env y usa la ruta que creamos
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    instance_dir = os.path.join(current_dir, "instance")
-    os.makedirs(instance_dir, exist_ok=True)
-    db_path = os.path.join(instance_dir, "test.db")
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:////{db_path}"
+    db_path = os.path.join(current_dir, "instance", "test.db")
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
     
-    print(f"--- DATABASE PATH: {db_path} ---")
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:////{db_path}"
+    print(f"--- BACKEND FORCED TO: {app.config['SQLALCHEMY_DATABASE_URI']} ---")
 
-    # app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
 
 # 2. VINCULACIÓN INMEDIATA (Esto arregla el error)
 db.init_app(app)
