@@ -1,33 +1,105 @@
-.gradient-custom-2 {
-    /* fallback for old browsers */
-    background: #DEB887;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1))
-    }
+/* 
+    PROFILE PAGE STYLES
+    Theme: Modern Professional Gallery Profile
+*/
 
-    #profileButton {
-        font-size: 10px;
-        /* color: red; */
-        height: 75%;
-        /* margin-left: 100px; */
-        text-align: center;
-    }
-
-    #trashprofileButton {
-        height: 25px;
-        width: 30px
-    }
-
-.card{
-    /* background: #DEB887; */
-    /* Chrome 10-25, Safari 5.1-6 */
-    /* background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1)); */
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: white;;
+.profile-page-container {
+    background-color: #f8f9fa;
+    min-height: 100vh;
 }
 
+/* Updated Gradient: More subtle and modern */
+.gradient-custom-2 {
+    background: #1a1a1a;
+    background: linear-gradient(to right, #000000, #434343);
+    padding: 60px 0;
+}
 
-    
-  
+/* The Main Profile Card */
+.profile-card {
+    background: #fff;
+    border-radius: 0;
+    border: 1px solid #ddd;
+}
+
+/* Favorite Art Cards: Ensuring uniform size */
+.artwork-favorite-card {
+    display: flex;
+    flex-direction: column;
+    height: 420px; /* Fixed height for the whole card */
+    border: 8px solid #000 !important; /* "Museum frame" style */
+    border-radius: 0;
+    transition: transform 0.3s ease;
+    background: #fff;
+}
+
+.artwork-favorite-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Image Container: Forcing a specific aspect ratio */
+.img-container {
+    height: 250px; /* Fixed height for the image area */
+    width: 100%;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #eee;
+}
+
+.artwork-img-profile {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This is the key: it crops the image to fill the space without distortion */
+    transition: transform 0.5s ease;
+}
+
+.artwork-favorite-card:hover .artwork-img-profile {
+    transform: scale(1.1);
+}
+
+/* Card Body: Pushing the delete button to the bottom */
+.artwork-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.artwork-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits title to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+/* Delete Button Styling */
+.remove-btn {
+    background-color: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 5px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.remove-btn:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Responsive Grid */
+@media (max-width: 768px) {
+    .artwork-favorite-card {
+        height: auto;
+        margin-bottom: 20px;
+    }
+}

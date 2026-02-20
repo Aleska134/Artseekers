@@ -1,3 +1,91 @@
 /* 
     General Styles used on every website (Don't Repeat Yourself)
 */
+/* 
+    NAVBAR MODERN MUSEUM STYLE
+    Consistent across all pages
+*/
+
+.navbar-style {
+    background-color: #000000 !important; /* Negro sólido para contraste */
+    border-bottom: 1px solid #c5a059; /* Línea delgada dorada */
+    padding: 0.5rem 2rem;
+    z-index: 1000; /* Asegura que siempre esté por encima del contenido */
+}
+
+.navbar-brand {
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #c5a059 !important; /* Nombre en dorado */
+}
+
+.nav-link {
+    color: #ffffff !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #c5a059 !important; /* Hover en dorado */
+}
+
+.navbar-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #c5a059;
+    object-fit: cover;
+}
+
+/* Ajuste para el botón de hamburguesa en móvil */
+.navbar-toggler {
+    border-color: #c5a059;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3 Visual_Studio_Code_Icon.svg.png%3E%3Cpath stroke='rgba(197, 160, 89, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E") !important;
+}
+
+/* 
+    MODERN GALLERY FOOTER
+*/
+
+.footer-style {
+    background-color: #000000; /* Solid black to match navbar */
+    border-top: 1px solid #c5a059; /* Elegant gold top border */
+    color: #ffffff;
+    width: 100%;
+}
+
+.gold-text {
+    color: #c5a059;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-link {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #c5a059; /* Gold hover effect */
+}
+
+/* Sublte animation for the heart */
+.pulse {
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}

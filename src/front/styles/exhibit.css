@@ -1,85 +1,118 @@
-/*
-    home.css: This website contains selectors only used in home.css
-
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
+/* 
+    EXHIBITS PAGE STYLES
+    Theme: Modern Minimalist Gallery
+    Focus: Responsive layout and technical consistency
 */
 
-
-#main{
-    background: #DEB887;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
+/* Main wrapper with a deep neutral background to make artwork colors pop */
+.exhibits-container {
+    background-color: #121212;
+    background-image: radial-gradient(#333 0.5px, transparent 0.5px);
+    background-size: 30px 30px; /* Subtle architectural grid pattern */
+    min-height: 100vh;
+    padding-bottom: 50px;
+    color: #f5f5f5;
+    font-family: 'Georgia', serif;
 }
 
-
-.footer {
-    flex-shrink: 0;
-    bottom: 0;
-    background-color: 
-    #29627D;
- 
-  }
-
-  .navbar {
-    background-color: 
-    #29627D;
-    justify-content: flex-start;
-  }
-
-
-
-.navbar-logo {
-    width: 100px;
-    height: 100px;
-    padding-right: 1%;
+/* Flexbox Grid for the Gallery */
+#main {
+    padding: 20px;
+    gap: 30px;
 }
 
-
-
-.rowExhibit {
+/* Card Styling: "The Frame" 
+   Using fixed height to ensure grid uniformity
+*/
+.art-card {
+    background-color: #ffffff;
+    border: 12px solid #000000 !important; /* Thick solid frame look */
+    border-radius: 0;
+    width: 18rem;
+    height: 480px; /* Locked height for architectural symmetry */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    overflow: hidden;
     display: flex;
-    text-align: center;
-    justify-content: space-between;
-    margin: 45px 75px;
-    margin-top: 100px;
-    max-width: 100%;
-    flex-wrap: wrap;
-
+    flex-direction: column;
 }
 
-
-
-.art-poster {
-    border: 10px solid black;
-    padding: 75px 50px;
-    width: 65%;
-    
+.art-card:hover {
+    transform: scale(1.03) translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    border-color: #c5a059 !important; /* Gold highlight on hover */
 }
 
-.art-poster img {
-    object-fit: contain;
+/* Image behavior: Ensuring consistency across different aspect ratios */
+.art-image {
+    height: 280px;
+    width: 100%;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
 }
 
+/* Card Content: Implements Flexbox for the "Sticky Footer" pattern 
+   This ensures the heart button is always visible at the bottom.
+*/
 .card-body {
+    padding: 12px;
+    background-color: #fff;
+    color: #1a1a1a;
     display: flex;
-}
-.card-text {
-    text-align: left;
-}
-
-.exhibit-button {
-    font-size: 10px;
-    /* color: red; */
-    height: 75%;
-    margin-left: 100px;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes footer to the bottom */
+    flex-grow: 1; /* Occupies all remaining vertical space */
 }
 
-.exhibit-button.favorited, .fas.fa-heart.favorited {
-    color: red;
+/* Title Truncation: Prevents text from pushing elements out of the frame */
+.card-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 2px;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits title to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.text-muted.small {
+    color: #777 !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.65rem;
+}
+
+/* Card Footer: Aligns the Artist name and Favorite button */
+.card-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 8px;
+}
+
+/* Button & Icon Styling */
+.btn-outline-danger {
+    border-radius: 50%;
+    padding: 5px 8px;
+    transition: transform 0.2s ease;
+    z-index: 10;
+}
+
+.btn-outline-danger:hover {
+    transform: scale(1.2);
+    background-color: transparent !important;
+}
+
+.fas.fa-heart { color: #dc3545; } /* Red when favorited */
+.far.fa-heart { color: #bbb; }    /* Grey when empty */
+
+/* Pagination Style */
+.pagination .page-link {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #333;
 }
 
 

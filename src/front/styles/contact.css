@@ -1,9 +1,62 @@
-#background-color{
-    background: #DEB887;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    min-height: 100vh;
+/* 
+    CONTACT PAGE STYLES
+    Theme: Modern Gallery Support
+*/
+
+.contact-page-wrapper {
+    min-height: calc(100vh - 80px);
+    padding: 40px 20px;
 }
 
+/* Reusing the auth-card style with a wider layout */
+.auth-card {
+    background-color: #ffffff;
+    border: 1px solid #c5a059;
+    border-radius: 0;
+}
+
+.auth-title {
+    font-family: 'Georgia', serif;
+    letter-spacing: 3px;
+    font-weight: bold;
+    color: #000;
+}
+
+.auth-input {
+    border-radius: 0;
+    border: 1px solid #ddd;
+    background-color: #fcfcfc;
+}
+
+.auth-input:focus {
+    background-color: #fff;
+    border-color: #c5a059;
+    box-shadow: none;
+}
+
+.text-warning {
+    color: #c5a059 !important; /* Consistent Gold */
+}
+
+.btn-dark.auth-btn {
+    background-color: #000;
+    border: none;
+    border-radius: 0;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+.btn-dark.auth-btn:hover {
+    background-color: #c5a059;
+    color: #000;
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+    .col-md-8 {
+        border-right: none !important;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 30px;
+        margin-bottom: 30px;
+    }
+}

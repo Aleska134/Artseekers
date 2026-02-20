@@ -1,80 +1,116 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
-
+import AuthComponent from "../component/auth";
 import "../../styles/exhibit.css";
 
-export const Department = (props) => {
-  const { store, actions } = useContext(Context);
-  const params = useParams();
-  const [favorited, setFavorited] = useState({}); // State to track favorited items
+/**
+ * DEPARTMENT VIEW COMPONENT
+ * Filters and displays artworks belonging to a specific museum department.
+ */
+export const Department = () => {
+    const { store, actions } = useContext(Context);
+    const params = useParams();
+    const fallBackURL = "https://via.placeholder.com/300x400?text=Artwork+Not+Found";
 
-  // Function to handle favoriting an item
-  const handleFavorite = (exhibit_museum_id) => {
-    setFavorited((prevFavorited) => ({
-      ...prevFavorited,
-      [exhibit_museum_id]: !prevFavorited[exhibit_museum_id],
-    }));
-    actions.addFavorite(exhibit_museum_id);
-  };
+    /**
+     * INITIALIZATION EFFECT:
+     * Re-fetches data if the store is lost (e.g., on a page refresh).
+     */
+    useEffect(() => {
+        if (store.artPieces.length === 0) {
+            actions.getArtPiecesAndDepartments();
+        }
+    }, []);
 
-  // Find the current department
-  const department = store.artDepartments.find(dept => dept.department_museum_id.toString() === params.thedepartment);
-  const departmentName = department ? department.name : 'Department';
+    /**
+     * DATA FILTERING LOGIC:
+     * 1. Find the current department object to get its name.
+     * 2. Filter the global artworks array by the department ID provided in URL params.
+     */
+    const department = store.artDepartments.find(
+        dept => dept.department_museum_id.toString() === params.thedepartment
+    );
+    
+    const filteredArtPieces = store.artPieces.filter(
+        item => item.department_museum_id.toString() === params.thedepartment
+    );
 
-  // Filter art pieces by department
-  let artPieces = store.artPieces.filter(
-    (item) => item.department_museum_id.toString() === params.thedepartment
-  );
+    /**
+     * REACTIVE LOGIC: Check if an item is favorited.
+     * This looks directly into the global user object for a Single Source of Truth.
+     */
+    const isFavorited = (museumId) => {
+        return store.user?.favorites?.some(fav => fav.exhibit_museum_id === museumId);
+    };
 
-  // Define fallback URL for images
-  let fallBackURL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzqX-q4R4VGGs1ArQpqZ-Y5deWIBVJ97KHOp4bkuQlmg&s";
+    return (
+        <AuthComponent>
+            <div className="exhibits-container pt-5 text-center" id="background">
+                <header className="mb-5">
+                    <span className="text-muted small letter-spacing-2">DEPARTMENT COLLECTION</span>
+                    <h1 className="display-4 text-uppercase fw-bold">
+                        {department ? department.name : "Loading Collection..."}
+                    </h1>
+                    <div className="title-underline mx-auto" style={{width: "60px", height: "3px", backgroundColor: "#c5a059"}}></div>
+                </header>
 
-  return (
-    <div id="background">
-      <h1 className="text-center pt-5">{departmentName}</h1>
-      <div className="text-center justify-content-center d-flex flex-wrap w-100" id="main">
-        {artPieces.map((item, index) => (
-          <div className="rowExhibit" key={index}>
-            <div
-              className="card"
-              style={{
-                width: "18rem",
-                height: "420px",
-                boxShadow: "10px 10px 20px 21px rgba(0, 0, 0, 0.2)",
-                border: "15px solid black",
-              }}
-            >
-              <Link to={`../../exhibits/single/${item.exhibit_museum_id}`}>
-                <img
-                  src={item.primary_image_small}
-                  className="card-img-top"
-                  width="18rem"
-                  height="320px"
-                  onError={(e) => {
-                    e.target.src = fallBackURL; // Fallback image if there's an error
-                  }}
-                  alt={item.exhibit_name}
-                />
-              </Link>
-              <div className="card-body overflow-auto mb-2">
-                <p className="card-text" style={{ fontSize: "x-small" }}>
-                  {item.exhibit_name}
-                </p>
-                <button
-                  className={`exhibit-button ${favorited[item.exhibit_museum_id] ? 'favorited' : ''}`}
-                  onClick={() => {
-                    handleFavorite(item.exhibit_museum_id);
-                  }}
-                  style={{"borderStyle": "none","backgroundColor":"none","background": "rgba(0, 0, 255, 0.1)"}}
-                >
-                  <i className={`fas fa-heart ${favorited[item.exhibit_museum_id] ? 'favorited' : ''}`} aria-hidden="true" ></i>
-                </button>
-              </div>
+                <div className="d-flex flex-wrap justify-content-center w-100" id="main">
+                    {filteredArtPieces.length === 0 ? (
+                        <div className="py-5">
+                            <p className="text-muted italic">No exhibits found for this department.</p>
+                            <Link to="/departments" className="btn btn-outline-light btn-sm">Return to Departments</Link>
+                        </div>
+                    ) : (
+                        filteredArtPieces.map((item, index) => (
+                            <div className="rowExhibit m-3" key={item.exhibit_museum_id || index}>
+                                <div className="card art-card shadow-lg">
+                                    {/* Link uses absolute path to reach Single view correctly */}
+                                    <Link to={`/exhibits/single/${item.exhibit_museum_id}`}>
+                                        <img
+                                            src={item.primary_image_small}
+                                            className="card-img-top art-image"
+                                            onError={(e) => { e.target.src = fallBackURL; }}
+                                            alt={item.exhibit_name}
+                                        />
+                                    </Link>
+
+                                    <div className="card-body">
+                                        <div className="card-info-top">
+                                            <h6 className="card-title text-truncate">{item.exhibit_name}</h6>
+                                            <p className="text-muted small">ID: #{item.exhibit_museum_id}</p>
+                                        </div>
+                                        
+                                        <div className="card-footer-row">
+                                            <small className="text-italic text-truncate" style={{maxWidth: "70%"}}>
+                                                {item.artist_name || "Unknown Author"}
+                                            </small>
+                                            
+                                            {/* DYNAMIC TOGGLE BUTTON */}
+                                            <button
+                                                className="btn btn-outline-danger border-0"
+                                                onClick={() => isFavorited(item.exhibit_museum_id) 
+                                                    ? actions.deleteFavorite(item.exhibit_museum_id) 
+                                                    : actions.addFavorite(item.exhibit_museum_id)}
+                                            >
+                                                <i className={`${isFavorited(item.exhibit_museum_id) ? "fas" : "far"} fa-heart`}></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                <div className="mt-5 pb-5">
+                    <Link to="/departments">
+                        <button className="btn btn-outline-light rounded-0 px-4 py-2">
+                            <i className="fas fa-th-large me-2"></i> BACK TO ALL DEPARTMENTS
+                        </button>
+                    </Link>
+                </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+        </AuthComponent>
+    );
 };

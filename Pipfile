@@ -20,6 +20,7 @@ flask-admin = "*"
 typing-extensions = "*"
 flask-jwt-extended = "*"
 requests = "*"
+PyYAML = ">=6.0.1"
 
 [requires]
 python_version = "3.12"

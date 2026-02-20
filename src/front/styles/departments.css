@@ -1,78 +1,98 @@
-#background{
-    background: #DEB887;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    bottom:0;
+/* 
+    DEPARTMENTS STYLES
+    Theme: Modern Minimalist Directory
+*/
+
+.departments-wrapper {
+    background-color: #fcfcfc;
+    min-height: 100vh;
 }
 
-.footer {
-    flex-shrink: 0;
-    /* bottom: 0; */
-    background-color:
-    #29627D;
-  }
-  .navbar {
-    background-color:
-    #29627D;
-    justify-content: flex-start;
-  }
-.navbar-logo {
-    width: 100px;
-    height: 100px;
-    padding-right: 1%;
+.section-title {
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 2px;
 }
-.jumbotron{
+
+.title-underline {
+    width: 80px;
+    height: 4px;
+    background-color: #c5a059; /* Gold accent */
+    margin: 20px auto;
+}
+
+/* Department Tiles */
+.dept-card {
+    position: relative;
+    background-color: #000;
+    height: 180px;
     display: flex;
-    text-align: center;
-    justify-content: space-around;
-    margin: auto;
-    padding: 20% 47%;
-    height: 10px;
-    width: 200px;
-    border: 2px black solid;
-    background-color: beige;
-}
-.history {
-    font-size: 8px;
-    border: 2px black solid;
-    margin: 5px;
-    width: 100%;
-}
-.history-title {
-    text-decoration: underline;
-    margin: 25px;
-}
-.art-Poster {
-    width: 100%;
-    border: 10px solid black;
-    padding: 75px 50px;
-    margin-top: 10px;
-    
-    background-image: url(https://as1.ftcdn.net/v2/jpg/02/77/30/98/1000_F_277309825_h8RvZkoyBGPDocMtippdfe3497xTrOXO.jpg);
-}
-.rowDepartments {
-    
-    margin: 100px;
-    zoom: 110%;
-    
-    
-}
-@media (max-width: 600px) {
-    .jumbotron {
-        padding: 10% 20%; /* Ajusta el padding para pantallas pequeñas */
-    }
-    .art-Poster {
-        padding: 20px; /* Menor padding en pantallas pequeñas */
-    }
-    .rowDepartments {
-        margin: 20px; /* Menor margen para pantallas pequeñas */
-        zoom: 100%; /* Se quita el zoom para pantallas pequeñas */
-    }
-    .history {
-        font-size: 12px; /* Aumenta el tamaño de fuente para mejorar legibilidad */
-    }
+    align-items: flex-end;
+    padding: 25px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    border: 1px solid #eee;
 }
 
+.dept-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%);
+    transition: background 0.3s ease;
+}
 
+.dept-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.dept-id {
+    color: #c5a059;
+    font-family: 'Monaco', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.dept-name {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.explore-link {
+    color: #fff;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+}
+
+/* Hover Effects */
+.dept-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.dept-card:hover .dept-card-overlay {
+    background: linear-gradient(0deg, rgba(197, 160, 89, 0.9) 0%, rgba(0,0,0,0.4) 100%);
+}
+
+.dept-card:hover .dept-name {
+    transform: translateY(-5px);
+}
+
+.dept-card:hover .explore-link {
+    opacity: 1;
+    transform: translateY(0);
+}

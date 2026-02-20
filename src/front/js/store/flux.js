@@ -5,92 +5,75 @@ const getState = ({ getStore, getActions, setStore }) => {
             artPieces: [],
             artDepartments: [],
             bool: false,
-            user: {}
+            user: {} // Profile and favorites will be stored here
         },
         actions: {
+        
+        syncTokenFromSessionStorage: async () => {
+            const token = sessionStorage.getItem("token");
+            if (token && token !== "" && token !== undefined) {
+            setStore({ token: token, bool: true });
+        
+            await getActions().getUserProfile(); 
+    }
+},
+
             onLoginClick: async (email, password) => {
-                const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
-                    method: 'POST',
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password }) 
-                });
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, password })
+                    });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    sessionStorage.setItem("token", data.access_token);
-                    setStore({ token: data.access_token, bool: true }); 
-                    return true; // Indicate login success
-                } else {
-                    return false; // Indicate login failure without setting a message here
-                }
-            },
-
-            redirecting: async () => {
-                const token = sessionStorage.getItem("token");
-                if (token) {
-                    setStore({ token, bool: true });
-                }
-            },
-
-            rehydrate: () => {
-                const token = sessionStorage.getItem("token");
-                if (token) {
-                    setStore({ token });
+                    if (response.ok) {
+                        const data = await response.json();
+                        sessionStorage.setItem("token", data.access_token);
+                        setStore({ token: data.access_token, bool: true });
+                        
+                        // load user profile immediately after login to sync favorites
+                        await getActions().getUserProfile();
+                        return true;
+                    }
+                    return false;
+                } catch (error) {
+                    console.error("Login error:", error);
+                    return false;
                 }
             },
 
             logOut: () => {
-                setStore({ token: null });
-                sessionStorage.clear();
+                sessionStorage.removeItem("token");
+                setStore({ token: null, bool: false, user: {} });
             },
 
-            getArtPiecesAndDepartments: () => {
-                    fetch(`${process.env.BACKEND_URL}/api/exhibits-and-departments`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const store = getStore();
-                            store.artPieces = data.exhibits;
-                            store.artDepartments = data.departments
-                            setStore(store);
-                            
-                        });
-            },
-
-
-            // getUser: () => {
-            //     const token = sessionStorage.getItem("token");
-            //     fetch(`${process.env.BACKEND_URL}/api/private`,
-            //     {headers : {
-            //         'Content-Type' : 'application/json',
-            //         Authorization : Bearer + token
-            //     }}
-            //     )
-            //             .then(response => response.json())
-            //             .then(data => {
-            //                 const store = getStore();
-            //                 store.user = data;
-            //                 console.log(store.user)
-                            
-            //             });
-            // },
-
-            // getDepartments: () => {
-            //     fetch("https://collectionapi.metmuseum.org/public/collection/v1/departments")
-            //         .then(response => response.json())
-            //         .then(data => {
-            //             setStore({ artDepartments: data.departments });
-            //         });
-            // },
-
-            usersFavoritePage: async () => {
+            getUserProfile: async () => {
                 const store = getStore();
-                const response = await fetch(`${process.env.BACKEND_URL}/api/private`, { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}`}});
-                if (!response.ok) {
-                    console.error("Failed to fetch user's information");
-                    console.log(response,sessionStorage.getItem('token'))
-                }else{
-                    const data = await response.json()
-                    setStore({user : data})
+                if (!store.token) return;
+
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/user/profile`, { 
+                        headers: { Authorization: `Bearer ${store.token}` }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ user: data }); // store the entire user object, including favorites, in the global store
+                    }
+                } catch (error) {
+                    console.error("Error fetching user profile:", error);
+                }
+            },
+
+            getArtPiecesAndDepartments: async () => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/exhibits-and-departments`);
+                    const data = await response.json();
+                    setStore({ 
+                        artPieces: data.exhibits, 
+                        artDepartments: data.departments 
+                    });
+                } catch (error) {
+                    console.error("Error loading artworks:", error);
                 }
             },
 
@@ -98,26 +81,15 @@ const getState = ({ getStore, getActions, setStore }) => {
                 const store = getStore();
                 try {
                     const response = await fetch(`${process.env.BACKEND_URL}/api/addFavorite/${exhibit_museum_id}`, {
-                        headers: {
-                            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-                        },
                         method: 'POST',
+                        headers: { Authorization: `Bearer ${store.token}` }
                     });
-
-                    if (!response.ok) {
-                        throw new Error('Error adding favorite');
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ user: data }); // backend returns updated user profile with new favorites list, so we update the store with that data to keep it in sync
                     }
-
-                    const jsonResponse = await response.json();
-
-                    console.log("Favorite succesfully added", jsonResponse);
-                    setStore({user : jsonResponse})
-
-                    
                 } catch (error) {
-                    console.error("Error adding favorite", error);
-                    
-                    
+                    console.error("Error adding favorite:", error);
                 }
             },
 
@@ -125,43 +97,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                 const store = getStore();
                 try {
                     const response = await fetch(`${process.env.BACKEND_URL}/api/deleteFavorite/${exhibit_museum_id}`, {
-                        headers: {
-                            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-                        },
                         method: 'DELETE',
+                        headers: { Authorization: `Bearer ${store.token}` }
                     });
-
-                    if (!response.ok) {
-                        throw new Error('Error deleting favorite from favorites');
-                    }
-
-                    const jsonResponse = await response.json();
-                    console.log("Favorite succesfully deleted", jsonResponse);
-                    setStore({user : jsonResponse})
-
-
-                    // Aquí puedes realizar acciones adicionales, como actualizar la UI
-                } catch (error) {
-                    console.error("Error! -> ", error);
-                    // Manejar errores, por ejemplo, mostrar un mensaje al usuario
-                }
-            },
-
-            authenticateUser: async () => {
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/private`, { headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` } });
-                    if (!response.ok) {
-                        console.log("Failed to authenticate the user. Your token may be invalid or expired");
-                        return false;
-                    } else {
-                        console.log("User authenticated successfully");
-                        return true;
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ user: data });
                     }
                 } catch (error) {
-                    console.log("Authentication error:", error);
-                    return false;
+                    console.error("Error deleting favorite:", error);
                 }
-            },
+            }
         }
     };
 };

@@ -1,8 +1,54 @@
-#background-color{
-    background: #DEB887;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    min-height: 100vh;
+/* 
+    LOGIN & AUTH STYLES
+    Theme: Minimalist Professional
+*/
+
+.auth-container {
+    min-height: calc(100vh - 80px); /* Fill screen minus navbar height */
+    background-color: #121212;
+    background-image: radial-gradient(#222 0.5px, transparent 0.5px);
+    background-size: 20px 20px;
+}
+
+.auth-card {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #c5a059; /* Gold accent */
+    border-radius: 0; /* Sharp, geometric design */
+}
+
+.auth-title {
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.auth-input {
+    border-radius: 0;
+    border: 1px solid #ddd;
+}
+
+.auth-input:focus {
+    border-color: #c5a059;
+    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25);
+}
+
+.auth-btn {
+    border-radius: 0;
+    letter-spacing: 2px;
+    font-weight: bold;
+    padding: 10px;
+    background-color: #000;
+}
+
+.auth-btn:hover {
+    background-color: #c5a059;
+    color: #000;
+}
+
+.auth-link {
+    color: #c5a059;
+    text-decoration: none;
+    font-weight: 600;
 }

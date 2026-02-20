@@ -1,130 +1,172 @@
 import React, { useContext, useState, useRef } from "react";
 import { Context } from "../store/appContext";
-import "../../styles/contact.css";
 import emailjs from "@emailjs/browser";
+import "../../styles/contact.css";
 
+/**
+ * CONTACT US COMPONENT
+ * Handles external communication via EmailJS.
+ * Demonstrates: Third-party API integration, Form Validation, and Ref usage.
+ */
 export const Contactus = () => {
     const form = useRef();
     const { store, actions } = useContext(Context);
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [subject, setSubject] = useState('');
-    const [message, setMessage] = useState('');
-
-    // ui658ZPOA12dMvT_e
     
+    // Form state
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+    });
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // Prevents default form submission behavior
-        console.log({ name, email, subject, message });
+    // UI state for feedback
+    const [status, setStatus] = useState({ type: '', text: '' });
+    const [isSending, setIsSending] = useState(false);
 
-    const isValid = () => {
-        // const formdata = new FormData(form.current)
-        // const name = formdata.get("from_name")
-        // const email = formdata.get("from_email")
-        // const subject = formdata.get("subject")
-        // const message = formdata.get("message")
-        console.log(name, email, subject, message)
+    /**
+     * CS LOGIC: Client-side Validation
+     * Ensures all fields meet minimum requirements before hitting the API.
+     */
+    const validateForm = () => {
+        const { name, email, subject, message } = formData;
+        return (
+            name.length > 2 && 
+            email.includes("@") && 
+            subject.length > 2 && 
+            message.length > 5
+        );
+    };
 
-
-        if (name.length > 3 || email.includes("@") || subject.length > 1){
-            return true
+    /**
+     * EVENT HANDLER: Form Submission
+     * Uses EmailJS to send data to the configured service.
+     */
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!validateForm()) {
+            setStatus({ type: 'danger', text: "Please fill out all fields correctly." });
+            return;
         }
-        else return false
-    }
 
-    const checkValidation = isValid()
+        setIsSending(true);
+        setStatus({ type: 'info', text: "Sending your message..." });
 
-    if (checkValidation) {
-        emailjs.sendForm("service_glj46sa", "template_vkp23ks", form.current, "ui658ZPOA12dMvT_e").then(
-            (result) => {
-              console.log(result);
-               });
+        try {
+            // Integrating EmailJS Service
+            const result = await emailjs.sendForm(
+                "service_m002m7i", 
+                "template_rpim9xk", 
+                form.current, 
+                "zDvFQ-YKrOe7WmY8U"
+            );
 
-            (error) => {
-                console.log(error);
-            };
-  
-    
-    }
-
-        setName('');
-        setEmail('');
-        setSubject('');
-        setMessage('');
+            if (result.text === "OK") {
+                setStatus({ type: 'success', text: "Message sent! We will contact you soon." });
+                // Reset form on success
+                setFormData({ name: '', email: '', subject: '', message: '' });
+            }
+        } catch (error) {
+            console.error("EmailJS Error:", error);
+            setStatus({ type: 'danger', text: "Failed to send message. Please try again later." });
+        } finally {
+            setIsSending(false);
+        }
     };
 
     return (
-        
-        <div className="mt-0 mb-0" id="background-color">
-        <section className="p-3">
-            <h2 className="h1-responsive font-weight-bold text-center ">CONTACT US</h2>
-            <p className="text-center w-responsive mx-auto mb-4">
-                Have questions or comments? Please send us a message!
-            </p>
+        <div className="contact-page-wrapper auth-container d-flex align-items-center justify-content-center py-5">
+            <div className="auth-card shadow-lg p-4" style={{maxWidth: "800px"}}>
+                <header className="text-center mb-4">
+                    <h2 className="auth-title">CONTACT US</h2>
+                    <p className="text-muted small">Have questions? Our curators are here to help.</p>
+                </header>
 
-            <div style={{border:"10px solid black", backgroundColor:"white", padding:"20px"}}>
-            <div className="row">
-                <div className="col-md-9 mb-md-0 mb-5">
-                    <form ref = {form} id="contact-form" name="contact-form" onSubmit={handleSubmit}>
+                {/* FEEDBACK SYSTEM */}
+                {status.text && (
+                    <div className={`alert alert-${status.type} py-2 small text-center`} role="alert">
+                        {status.text}
+                    </div>
+                )}
 
-                        <div className="row">
-                            <div className="col-md-6">
-                                <div className="md-form mb-0">
-                                    <label htmlFor="name" className={name ? "active" : ""}>Name:</label>
-                                    <input style={{backgroundColor:"rgba(166, 193, 238, 1)"}}type="text" id="name" name="name" className="form-control" value={name} onChange={(e) => setName(e.target.value)} />
-                                    
+                <div className="row mt-4">
+                    {/* FORM SECTION */}
+                    <div className="col-md-8 border-end">
+                        <form ref={form} onSubmit={handleSubmit}>
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label small fw-bold">NAME</label>
+                                    <input 
+                                        type="text" 
+                                        name="name" 
+                                        className="form-control auth-input" 
+                                        value={formData.name} 
+                                        onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                                        required 
+                                    />
+                                </div>
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label small fw-bold">EMAIL</label>
+                                    <input 
+                                        type="email" 
+                                        name="email" 
+                                        className="form-control auth-input" 
+                                        value={formData.email} 
+                                        onChange={(e) => setFormData({...formData, email: e.target.value})} 
+                                        required 
+                                    />
                                 </div>
                             </div>
-                            <div className="col-md-6">
-                                <div className="md-form mb-0">
-                                    <label htmlFor="email" className={email ? "active" : ""}>Email:</label>
-                                    <input style={{backgroundColor:"rgba(166, 193, 238, 1)"}}type="text" id="email" name="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                    
-                                </div>
+                            <div className="mb-3">
+                                <label className="form-label small fw-bold">SUBJECT</label>
+                                <input 
+                                    type="text" 
+                                    name="subject" 
+                                    className="form-control auth-input" 
+                                    value={formData.subject} 
+                                    onChange={(e) => setFormData({...formData, subject: e.target.value})} 
+                                    required 
+                                />
                             </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="md-form mb-0">
-                                    <label htmlFor="subject" className={subject ? "active" : ""}>Subject:</label>
-                                    <input style={{backgroundColor:"rgba(166, 193, 238, 1)"}}type="text" id="subject" name="subject" className="form-control" value={subject} onChange={(e) => setSubject(e.target.value)} />
-                                </div>
+                            <div className="mb-3">
+                                <label className="form-label small fw-bold">MESSAGE</label>
+                                <textarea 
+                                    name="message" 
+                                    rows="4" 
+                                    className="form-control auth-input" 
+                                    value={formData.message} 
+                                    onChange={(e) => setFormData({...formData, message: e.target.value})} 
+                                    required
+                                ></textarea>
                             </div>
-                        </div>
+                            <button 
+                                type="submit" 
+                                className="btn btn-dark auth-btn w-100" 
+                                disabled={isSending}
+                            >
+                                {isSending ? "SENDING..." : "SEND MESSAGE"}
+                            </button>
+                        </form>
+                    </div>
 
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="md-form">
-                                    <label htmlFor="message">Message:</label>
-                                    <textarea style={{backgroundColor:"rgba(166, 193, 238, 1)"}} type="text" id="message" name="message" rows="2" className="form-control md-textarea" value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
-                                </div>
-                            </div>
+                    {/* INFO SECTION */}
+                    <div className="col-md-4 text-center d-flex flex-column justify-content-center">
+                        <div className="mb-4">
+                            <i className="fas fa-map-marker-alt fa-2x text-warning mb-2"></i>
+                            <p className="small mb-0">Miami, FL USA</p>
                         </div>
-
-                        <div className="text-center text-md-left">
-                            <button style={{marginTop:"15px"}} className="btn btn-primary" type="submit">Send</button>
+                        <div className="mb-4">
+                            <i className="fas fa-phone text-warning mb-2"></i>
+                            <p className="small mb-0">012-345-6789</p>
                         </div>
-                    </form>
-                </div>
-
-                <div className="col-md-3 text-center">
-                    <ul className="list-unstyled mb-0">
-                        <li><i className="fas fa-map-marker-alt fa-2x"></i>
-                            <p>Miami, FL USA</p>
-                        </li>
-                        <li><i className="fas fa-phone mt-4 fa-2x"></i>
-                            <p>012-345-6789</p>
-                        </li>
-                        <li><i className="fas fa-envelope mt-4 fa-2x"></i>
-                            <p>ArtSeekersTeam@mail.com</p>
-                        </li>
-                    </ul>
+                        <div className="">
+                            <i className="fas fa-envelope text-warning mb-2"></i>
+                            <p className="small mb-0">team@artseekers.com</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            </div>
-        </section>
         </div>
     );
 };

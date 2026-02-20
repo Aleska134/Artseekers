@@ -1,8 +1,62 @@
-#background-color{
-    background: #DEB887;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    min-height: 100vh;
+/* 
+    AUTHENTICATION PAGES STYLES
+    Shared between Login and Signup
+*/
+
+.auth-container {
+    min-height: calc(100vh - 80px); /* Adjust based on navbar height */
+    background-color: #121212;
+    background-image: radial-gradient(#222 0.5px, transparent 0.5px);
+    background-size: 20px 20px;
+}
+
+.auth-card {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid #c5a059; /* Gold accent border */
+    border-radius: 0; /* Keep the sharp gallery look */
+}
+
+.auth-title {
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #000;
+}
+
+.auth-input {
+    border-radius: 0;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.auth-input:focus {
+    border-color: #c5a059;
+    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25);
+}
+
+.auth-btn {
+    border-radius: 0;
+    letter-spacing: 2px;
+    font-weight: bold;
+    padding: 12px;
+    background-color: #000;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+    background-color: #c5a059;
+    color: #000;
+}
+
+.auth-link {
+    color: #c5a059;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
 }

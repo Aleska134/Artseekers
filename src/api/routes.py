@@ -57,13 +57,13 @@ def sign_up():
 
     return jsonify(response_body), 201
 
-@api.route('/user/profile', methods=['GET']) # Cambiado de /private a /user/profile
+@api.route('/user/profile', methods=['GET']) 
 @jwt_required()
 def get_my_profile():
     email = get_jwt_identity()
     user = User.query.filter_by(email=email).first()
     if user:
-        # Aquí ya se incluyen los favoritos gracias al serialize() de tu modelo
+        # Add favorites to the serialized user data
         return jsonify(user.serialize()), 200
     return jsonify({"message": "User not found"}), 404
 

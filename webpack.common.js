@@ -20,19 +20,23 @@ module.exports = {
           use: ['babel-loader']
         },
         {
-          test: /\.(css|scss)$/, use: [{
-              loader: "style-loader" // creates style nodes from JS strings
-          }, {
-              loader: "css-loader" // translates CSS into CommonJS
-          }]
-        }, //css only files
+          test: /\.(css|scss)$/, 
+          use: [
+            { loader: "style-loader" }, 
+            { loader: "css-loader" }
+          ]
+        },
         {
-          test: /\.(png|svg|jpg|gif|jpeg|webp)$/, use: {
+          test: /\.(png|svg|jpg|gif|jpeg|webp)$/, 
+          use: {
             loader: 'file-loader',
             options: { name: '[name].[ext]' }
           }
-        }, //for images
-        { test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/, use: ['file-loader'] } //for fonts
+        },
+        { 
+          test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/, 
+          use: ['file-loader'] 
+        }
     ]
   },
   resolve: {
@@ -40,8 +44,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-        favicon: '4geeks.ico',
-        template: 'template.html'
+        template: 'template.html',
+        filename: 'index.html',
+        favicon: 'favicon.jpg'
     }),
     new Dotenv({ safe: true, systemvars: true })
   ]

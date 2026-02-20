@@ -1,31 +1,88 @@
-<h1>Welcome to ArtSeekers! 🎨🌍 </h1>
+<div align="center">
+  <h1>🖼️ ArtSeekers: Full-Stack MET Museum Explorer</h1>
+  <p><strong>A professional gallery engine optimized for data-intensive exploration.</strong></p>
+  
+  <p>
+    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
+    <img src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
+    <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" alt="JWT">
+  </p>
+</div>
 
-<h3>Your Adventure in Art Begins Here!</h3>
-Hey there, ArtSeekers! Ready for a dive into the colorful, dynamic world of art? You've just unlocked the door to not just any gallery, but a bursting playground for art lovers and culture enthusiasts alike. Here, every click leads you to a new discovery, every artwork tells a story, and every moment is an invitation to connect with art in ways you've never imagined.
+<hr />
 
-<h3>Our Epic Quest 🚀</h3>
-At ArtSeekers, we're on a mission to turn the world into an open gallery—one where art isn't just observed but lived. We believe in the power of art to knit together time, space, and souls, and we've crafted a space where everyone, from the curious newbie to the seasoned art historian, can share in the thrill of discovery.
+<h2>📖 Project Overview</h2>
+<p>
+  ArtSeekers is a high-performance Full-Stack application designed to browse and curate masterpieces from the <strong>Metropolitan Museum of Art (The MET)</strong>. Originally started as a bootcamp project, I have refactored the entire core architecture to implement professional software engineering standards, focusing on <strong>algorithmic efficiency</strong> and <strong>automated data pipelines</strong>.
+</p>
 
-<h3>Dive Into a Global Art Party 🎉</h3>
-Joining ArtSeekers means you're not just exploring art; you're RSVPing to the most vibrant, global art party around! Here's what's on the agenda:
-<br>
+<h2>🧠 Engineering Highlights (CS Focus)</h2>
+<p>As a Computer Science student, I focused on solving real-world technical challenges during the development of this platform:</p>
+
+<table>
+  <tr>
+    <td width="30%"><b>Algorithmic Optimization</b></td>
+    <td>Refactored API endpoints to replace nested loops ($O(N \times M)$) with <b>Hash Map (Dictionary) Lookups</b>. This reduced the time complexity to <b>$O(N + M)$</b> during data serialization, significantly improving response times for large datasets.</td>
+  </tr>
+  <tr>
+    <td><b>ETL Data Pipeline</b></td>
+    <td>Developed a custom Python script (<code>popdb.py</code>) to <b>Extract, Transform, and Load</b> data from the MET Public API. It handles HTTP headers to bypass bot-detection and ensures data sanitization before committing to the SQL database.</td>
+  </tr>
+  <tr>
+    <td><b>State Hydration & Persistence</b></td>
+    <td>Implemented a <b>Token Synchronization</b> logic in React.js to ensure the global store remains consistent with <code>sessionStorage</code> after browser refreshes, preventing unwanted session loss.</td>
+  </tr>
+  <tr>
+    <td><b>Backend Architecture</b></td>
+    <td>Engineered a robust database connection logic using <b>Absolute Dynamic Routing</b> to manage SQLite persistence across different environments (local vs. cloud containers).</td>
+  </tr>
+</table>
+
+<h2>🛠️ Tech Stack</h2>
 <ul>
-<li>Discover and Favorite: Unearth hidden gems and blockbuster masterpieces. Give a thumbs-up to your favorites, shaping the art journey for fellow explorers.</li>
-<li>Personal Art Collections: Love a piece? Click 'favorite', and boom—it's in your virtual gallery. Show off your art persona through your unique collection.</li>
-<li>Interactive Stories: Get lost in the tales behind the canvas, the drama of the art world, and the whispers of history in every brushstroke.</li>
+  <li><b>Frontend:</b> React.js, Context API (Flux Pattern), React Router, Bootstrap 5.</li>
+  <li><b>Backend:</b> Python 3, Flask, Flask-SQLAlchemy (ORM), Flask-JWT-Extended.</li>
+  <li><b>Database:</b> SQLite (Development) / PostgreSQL (Production).</li>
+  <li><b>External API:</b> The Metropolitan Museum of Art Public Collection API.</li>
 </ul>
 
-<h3>Your All-Access Pass to Awesomeness ✨</h3>
+<h2>🖼️ Key Features</h2>
 <ul>
-<li>Global Art Showcase: From the ancient to the avant-garde, our art collection spans the globe and time itself.</li>
-<li>Museum Marvels: Wander through virtual departments of the world's most famous museums, no ticket required.</li>
-<li>Favorite Finds: Your favorites list is your personal art diary. Keep track of what moves you and create your own gallery of wonders.</li>
+  <li><b>Dynamic Gallery:</b> Browse art pieces by specific MET departments (Egypt, European Paintings, etc.).</li>
+  <li><b>Personal Collection:</b> Users can register and save their favorite pieces to a persistent personal profile.</li>
+  <li><b>Advanced Search:</b> Integrated fallback mechanisms for missing museum data and images.</li>
+  <li><b>Admin Dashboard:</b> Customized Flask-Admin interface with restricted sensitive fields (passwords) for security.</li>
 </ul>
 
-<h3>More Than a Website: An Expedition 🌌</h3>
-With ArtSeekers, every visit is a step into a vast, vivid world of art exploration. We're more than a platform; we're a portal to the past, present, and future of human creativity. Here, every artwork invites you to a party, every story is a treasure hunt, and every member is part of a global crew of art adventurers.
+<h2>⚙️ Installation & Setup</h2>
+<pre><code>
+# 1. Clone the repository
+git clone https://github.com/YourUsername/Artseekers.git
 
-<h3>Embark on Your Art Journey Today! 🚢</h3>
-Ready to set sail on a boundless sea of creativity? Join ArtSeekers now and chart your course through the marvels of art history. Discover, connect, and celebrate with us as we journey through art's endless landscapes, one masterpiece at a time.
+# 2. Setup the Backend
+pipenv install
+pipenv shell
+export FLASK_APP=src/app.py
+flask db upgrade
+python src/popdb.py
 
-Let the art adventure begin, ArtSeekers! Your treasure map to the art world awaits. 🎨✨
+# 3. Start the Servers
+python src/app.py
+# (In another terminal)
+npm install
+npm start
+</code></pre>
+
+<hr />
+
+<div align="center">
+  <p><i>Developed and optimized by <b>Aleska Braschi</b> as a part of my Software Engineering portfolio.</i></p>
+  <a href="https://www.linkedin.com/in/aleska-p-braschi">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+  </a>
+  <a href="https://github.com/Aleska134">
+    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+  </a>
+</div>

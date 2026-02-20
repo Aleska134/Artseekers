@@ -1,96 +1,152 @@
-.parent-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #DEB887;
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(222, 184, 135, 1), rgba(166, 193, 238, 1));
+/* 
+    MUSEUMS STYLES
+    Theme: Modern Gallery Wall
+*/
+
+.museums-page-wrapper {
+    background-color: #fcfcfc;
     min-height: 100vh;
-  }
-
-
-.heading {
-    text-align: center;
-    padding-top: 25px;
 }
 
-.content-container {
-    padding-bottom: 50px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin: 50px auto 0;
-    max-width: 1200px; 
+.museums-title {
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #1a1a1a;
 }
 
-.image-frame-container {
-    flex: 1 1 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 400px;
-    margin: 0 10px;
-    box-sizing: border-box;
+.gold-divider {
+    width: 60px;
+    height: 3px;
+    background-color: #c5a059;
+    margin-top: 15px;
+}
+
+/* THE FRAME LOOK */
+.museum-frame {
     position: relative;
-}
-
-.image-frame {
-    border: 5px solid black;
-    width: 100%;
-    max-width: 400px;
-    background-color: #fff;
-}
-
-.image-frame img {
-    width: 100%;
+    border: 15px solid #000; /* Thick gallery frame */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.3s ease;
     height: 250px;
-    display: block;
-    object-fit: cover;
+    box-sizing: border-box; 
 }
 
-.popup {
+.museum-frame:hover {
+    transform: scale(1.02);
+}
+
+.museum-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: filter 0.5s ease;
+}
+
+.grayscale {
+    filter: grayscale(100%) opacity(0.6);
+}
+
+/* OVERLAY ON HOVER */
+.frame-overlay {
     position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: white;
-    padding: 20px;
-    z-index: 2;
-    border: 2px solid #000;
-    width: 80%;
-    box-sizing: border-box;
-    overflow-y: auto;
-    display: none; /* Hide popup initially */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.show-popup {
-    display: block; /* Show popup on click */
+.museum-frame:hover .frame-overlay {
+    opacity: 1;
 }
 
-.popup-close-button {
-    cursor: pointer;
-    z-index: 10;
-    padding: 10px 20px;
-    border: none;
-    background-color: #f00;
+.view-details {
     color: #fff;
-    font-weight: bold;
-    margin-top: 20px;
-    text-align: center;
-    display: inline-block;
+    border: 1px solid #fff;
+    padding: 8px 16px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
 }
 
-@media (max-width: 768px) {
-    .content-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
+/* THE POPUP MODAL (Adjusted to avoid the frame) */
+.museum-popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.92); /* Slightly more opaque for better contrast */
+    z-index: 50;
+    
+    /* ADD THIS: Padding accounts for the 15px border + extra space */
+    padding: 25px; 
+    
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers content vertically */
+    align-items: center;     /* Centers content horizontally */
+    text-align: center;
+}
 
-    .image-frame-container {
-        margin: 10px 0;
-    }
+
+.popup-title {
+    font-size: 1rem; /* Slightly smaller to fit better */
+    color: #c5a059;
+    font-weight: bold;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.popup-location {
+    font-size: 0.75rem;
+    color: #bbb;
+    margin-bottom: 10px;
+}
+
+.popup-list {
+    font-size: 0.8rem;
+    padding-left: 0; /* Remove default bullet padding */
+    list-style-type: none; /* Cleaner look for small spaces */
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.popup-list li {
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 2px;
+}
+
+.popup-close-btn {
+    border-radius: 0;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    padding: 5px 15px;
+    border: 1px solid #fff;
+    background: transparent;
+    color: #fff;
+    width: auto; /* Don't force full width */
+    transition: all 0.3s ease;
+}
+
+.popup-close-btn:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+.museum-label {
+    font-size: 1rem;
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    color: #333;
 }
