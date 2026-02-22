@@ -59,7 +59,7 @@
 <h2>⚙️ Installation & Setup</h2>
 <pre><code>
 # 1. Clone the repository
-git clone https://github.com/YourUsername/Artseekers.git
+git clone https://github.com/Aleska134/Artseekers.git
 
 # 2. Setup the Backend
 pipenv install
