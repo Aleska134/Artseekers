@@ -1,15 +1,19 @@
 import React, { useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom"; 
 import logoImage from "../../img/logo.jpg";
 import { Context } from "../store/appContext";
 
+/**
+ * NAVBAR COMPONENT
+ * Handles navigation and global authentication state display.
+ */
 const Navbar = () => {
     const { store, actions } = useContext(Context);
-    const navigate = useNavigate(); // Initialize the navigation hook
+    const navigate = useNavigate();
 
     /**
-     * EFFECT: State Hydration
-     * Syncs user profile if token exists but user data is missing.
+     * EFFECT: Profile Synchronization
+     * Fetches user data if a token exists but the profile object is empty.
      */
     useEffect(() => {
         if (store.token && !store.user?.name) {
@@ -18,18 +22,18 @@ const Navbar = () => {
     }, [store.token]);
 
     /**
-     * HANDLER: Logout and Redirect
-     * Clears session data and moves the user to the home page.
+     * HANDLER: Session Termination
+     * Logs the user out and redirects to the landing page.
      */
     const handleLogout = () => {
-        actions.logOut(); // Clear global state and sessionStorage
-        navigate("/");    // Programmatic redirect to Home
+        actions.logOut();
+        navigate("/");
     };
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark navbar-style shadow-sm">
             <div className="container-fluid">
-                {/* Brand Logo and Name */}
+                {/* Branding and Logo */}
                 <Link to="/" className="d-flex align-items-center text-decoration-none">
                     <img 
                         className="navbar-logo" 
@@ -40,8 +44,12 @@ const Navbar = () => {
                     <span className="navbar-brand ms-2 mb-0 h1">ArtSeekers</span>
                 </Link>
 
+                {/* 
+                    UPDATED RESPONSIVE TOGGLER
+                    Replaced default SVG with FontAwesome for better styling control.
+                */}
                 <button
-                    className="navbar-toggler"
+                    className="navbar-toggler border-0"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent"
@@ -49,7 +57,8 @@ const Navbar = () => {
                     aria-expanded="false"
                     aria-label="Toggle navigation"
                 >
-                    <span className="navbar-toggler-icon"></span>
+                    {/* CS Logic: Using an icon font allows us to style it as text (CSS 'color') */}
+                    <i className="fas fa-bars" style={{ color: "#c5a059", fontSize: "1.5rem" }}></i>
                 </button>
 
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
@@ -61,6 +70,7 @@ const Navbar = () => {
                             <Link to="/museums" className="nav-link">Museums</Link>
                         </li>
 
+                        {/* PROTECTED NAVIGATION LINKS */}
                         {store.token && (
                             <>
                                 <li className="nav-item">
@@ -82,17 +92,14 @@ const Navbar = () => {
                         </li>
                     </ul>
 
+                    {/* AUTHENTICATION ACTION AREA */}
                     <div className="d-flex align-items-center">
-                        {store.token ? (
-                            <div className="d-flex align-items-center">
-                                <span className="text-light me-3 small d-none d-md-inline">
-                                    {store.user?.name ? (
-                                        <>Welcome back, <strong>{store.user.name}</strong></>
-                                    ) : (
-                                        <span className="text-muted italic">Loading profile...</span>
-                                    )}
+                        {store.token ? ( 
+                            <div className="d-flex align-items-center ms-auto">
+                                <span className="text-light me-3 d-none d-lg-inline small italic">
+                                    {store.user?.name ? `Welcome, ${store.user.name}` : "Loading..."}
                                 </span>
-                                {/* UPDATED LOGOUT BUTTON */}
+                           
                                 <button 
                                     className="btn btn-outline-danger btn-sm" 
                                     onClick={handleLogout}
@@ -102,7 +109,7 @@ const Navbar = () => {
                             </div>
                         ) : (
                             <Link to="/login">
-                                <button className="btn btn-primary btn-sm">Login</button>
+                                <button className="btn btn-primary btn-sm px-3">Login</button>
                             </Link>
                         )}
                     </div>

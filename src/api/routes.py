@@ -192,7 +192,7 @@ def get_ai_explanation():
 
     body = request.get_json()
     artwork_name = body.get("name")
-    image_url = body.get("image_url") # <--- Recibimos la URL de la imagen
+    image_url = body.get("image_url") # <--- Get image URL from request body
 
     # Hugging Face Router endpoint (OpenAI Compatible)
     API_URL = "https://router.huggingface.co/v1/chat/completions"
@@ -201,7 +201,7 @@ def get_ai_explanation():
         "Content-Type": "application/json"
     }
     
-    # Payload para modelo de VISION
+    # Payload for Vision-Language model (Qwen-VL) with multimodal input (text + image)
     payload = {
         "model": "Qwen/Qwen3-VL-235B-A22B-Instruct:novita",
         "messages": [
@@ -219,7 +219,7 @@ def get_ai_explanation():
                     },
                     {
                         "type": "image_url",
-                        "image_url": { "url": image_url } # <--- La IA 've' la imagen real
+                        "image_url": { "url": image_url } # <--- Include image URL in the payload for multimodal analysis
                     }
                 ]
             }

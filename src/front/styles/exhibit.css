@@ -115,4 +115,23 @@
     border: 1px solid #333;
 }
 
-
+@media (max-width: 767px) {
+    .art-card {
+        width: 100% !important; 
+        height: 340px !important; /* Shorter cards for 2-column layout */
+        border-width: 5px !important; /* Thinner museum frame for mobile */
+    }
+    .art-image {
+        height: 180px !important; /* Smaller image height */
+    }
+    .card-body {
+        padding: 8px !important;
+    }
+    .card-title {
+        font-size: 0.75rem !important;
+        -webkit-line-clamp: 1; /* Only 1 line for title on mobile */
+    }
+    .card-footer-row {
+        padding-top: 4px !important;
+    }
+}

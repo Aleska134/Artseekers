@@ -83,7 +83,9 @@ const Login = () => {
                     </div>
 
                     <div className="text-end mb-3">
-                        <Link to="#" className="auth-link small">Forgot Password?</Link>
+                        <span className="text-muted small" style={{cursor: "not-allowed"}}>
+                            Forgot Password? (Coming Soon)
+                        </span>
                     </div>
 
                     <button type="submit" className="btn btn-dark w-100 auth-btn">

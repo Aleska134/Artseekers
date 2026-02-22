@@ -55,52 +55,56 @@ export const Department = () => {
                     <div className="title-underline mx-auto" style={{width: "60px", height: "3px", backgroundColor: "#c5a059"}}></div>
                 </header>
 
-                <div className="d-flex flex-wrap justify-content-center w-100" id="main">
-                    {filteredArtPieces.length === 0 ? (
-                        <div className="py-5">
-                            <p className="text-muted italic">No exhibits found for this department.</p>
-                            <Link to="/departments" className="btn btn-outline-light btn-sm">Return to Departments</Link>
-                        </div>
-                    ) : (
-                        filteredArtPieces.map((item, index) => (
-                            <div className="rowExhibit m-3" key={item.exhibit_museum_id || index}>
-                                <div className="card art-card shadow-lg">
-                                    {/* Link uses absolute path to reach Single view correctly */}
-                                    <Link to={`/exhibits/single/${item.exhibit_museum_id}`}>
-                                        <img
-                                            src={item.primary_image_small}
-                                            className="card-img-top art-image"
-                                            onError={(e) => { e.target.src = fallBackURL; }}
-                                            alt={item.exhibit_name}
-                                        />
-                                    </Link>
+                {/* 
+                    CS TIP: Using Bootstrap Grid row-cols classes 
+                    - row-cols-2: 2 items per row on mobile
+                    - row-cols-md-3: 3 items per row on tablets
+                    - row-cols-lg-4: 4 items per row on desktops
+                */}
+                <div className="container-fluid px-2 px-md-5">
+                    <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-4 justify-content-center">
+                        {filteredArtPieces.length === 0 ? (
+                            <div className="col-12 py-5">
+                                <p className="text-muted italic">No exhibits found.</p>
+                            </div>
+                        ) : (
+                            filteredArtPieces.map((item, index) => (
+                                <div className="col d-flex justify-content-center" key={item.exhibit_museum_id || index}>
+                                    <div className="card art-card shadow-lg">
+                                        <Link to={`/exhibits/single/${item.exhibit_museum_id}`}>
+                                            <img
+                                                src={item.primary_image_small}
+                                                className="card-img-top art-image"
+                                                onError={(e) => { e.target.src = fallBackURL; }}
+                                                alt={item.exhibit_name}
+                                            />
+                                        </Link>
 
-                                    <div className="card-body">
-                                        <div className="card-info-top">
-                                            <h6 className="card-title text-truncate">{item.exhibit_name}</h6>
-                                            <p className="text-muted small">ID: #{item.exhibit_museum_id}</p>
-                                        </div>
-                                        
-                                        <div className="card-footer-row">
-                                            <small className="text-italic text-truncate" style={{maxWidth: "70%"}}>
-                                                {item.artist_name || "Unknown Author"}
-                                            </small>
+                                        <div className="card-body">
+                                            <div className="card-info-top">
+                                                <h6 className="card-title text-truncate">{item.exhibit_name}</h6>
+                                                <p className="text-muted small mb-0">ID: #{item.exhibit_museum_id}</p>
+                                            </div>
                                             
-                                            {/* DYNAMIC TOGGLE BUTTON */}
-                                            <button
-                                                className="btn btn-outline-danger border-0"
-                                                onClick={() => isFavorited(item.exhibit_museum_id) 
-                                                    ? actions.deleteFavorite(item.exhibit_museum_id) 
-                                                    : actions.addFavorite(item.exhibit_museum_id)}
-                                            >
-                                                <i className={`${isFavorited(item.exhibit_museum_id) ? "fas" : "far"} fa-heart`}></i>
-                                            </button>
+                                            <div className="card-footer-row">
+                                                <small className="text-italic text-truncate d-none d-md-inline" style={{maxWidth: "70%"}}>
+                                                    {item.artist_name || "Unknown"}
+                                                </small>
+                                                <button
+                                                    className="btn btn-outline-danger border-0 p-1"
+                                                    onClick={() => isFavorited(item.exhibit_museum_id) 
+                                                        ? actions.deleteFavorite(item.exhibit_museum_id) 
+                                                        : actions.addFavorite(item.exhibit_museum_id)}
+                                                >
+                                                    <i className={`${isFavorited(item.exhibit_museum_id) ? "fas" : "far"} fa-heart`}></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
-                    )}
+                            ))
+                        )}
+                    </div>
                 </div>
 
                 <div className="mt-5 pb-5">

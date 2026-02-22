@@ -104,3 +104,13 @@
         border-top: 3px solid #c5a059;
     }
 }
+
+@media (max-width: 991px) {
+    .art-poster-container {
+        margin-bottom: 2rem;
+    }
+    .singlecard-title {
+        font-size: 2rem;
+        text-align: center;
+    }
+}

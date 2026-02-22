@@ -5,6 +5,26 @@
     NAVBAR MODERN MUSEUM STYLE
     Consistent across all pages
 */
+/* 1. DESIGN SYSTEM VARIABLES */
+:root {
+    --main-black: #121212;
+    --accent-gold: #c5a059;
+    --soft-white: #f8f9fa;
+    --card-border: #000000;
+    --text-muted: #888888;
+}
+
+/* 2. GLOBAL DEFAULTS */
+body {
+    background-color: var(--soft-white);
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--main-black);
+    margin: 0;
+}
+
+h1, h2, h3, .navbar-brand {
+    font-family: 'Georgia', serif;
+}
 
 .navbar-style {
     background-color: #000000 !important; /* Negro sólido para contraste */
@@ -41,13 +61,27 @@
     object-fit: cover;
 }
 
-/* Ajuste para el botón de hamburguesa en móvil */
+/* Eliminar el icono viejo de Bootstrap y limpiar el botón */
 .navbar-toggler {
-    border-color: #c5a059;
+    padding: 0.25rem 0.5rem;
+    focus: none;
+    outline: none;
+    box-shadow: none !important; /* Elimina el resplandor azul al hacer clic */
 }
 
-.navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3 Visual_Studio_Code_Icon.svg.png%3E%3Cpath stroke='rgba(197, 160, 89, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E") !important;
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Opcional: Si quieres un borde dorado sutil en lugar de nada */
+.navbar-toggler {
+    border: 1px solid rgba(197, 160, 89, 0.4) !important;
+}
+
+/* Animación simple para que el usuario sepa que es clickeable */
+.navbar-toggler:active {
+    transform: scale(0.95);
 }
 
 /* 
@@ -89,3 +123,11 @@
     50% { transform: scale(1.2); }
     100% { transform: scale(1); }
 }
+
+
+@media (max-width: 991px) {
+    .navbar-style {
+        padding: 0.5rem 1rem; /* Reducimos padding en móvil para ganar espacio */
+    }
+}
+
