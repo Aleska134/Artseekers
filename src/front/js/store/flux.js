@@ -132,6 +132,32 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
+          
+            getAIInsight: async (artworkData) => {
+                const store = getStore();
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/ai/explain`, {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${store.token}`
+                        },
+                        body: JSON.stringify(artworkData) // data: { name, artist, culture }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.insight;
+                    } else if (response.status === 503) {
+                        return "The AI Historian is currently waking up. Please try again in 10 seconds.";
+                    }
+                    return "The curator is currently unavailable. Please try again later.";
+                } catch (error) {
+                    console.error("AI Insight Error:", error);
+                    return "Connection error with the AI engine.";
+                }
+            },
+
             deleteFavorite: async (exhibit_museum_id) => {
                 const store = getStore();
                 try {

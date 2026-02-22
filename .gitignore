@@ -80,3 +80,20 @@ database.database
 database.db
 diagram.png
 __pycache__/
+
+# Explicitly ignore environment variables
+.env
+
+# Ignore local SQLite databases
+*.db
+src/instance/*.db
+
+# Ignore python virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Ignore python cache
+__pycache__/
+*.py[cod]

@@ -1,6 +1,8 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import os
+import requests
 from flask import Flask, request, jsonify, Blueprint
 from api.models import db, User, Exhibits, Departments
 from api.utils import generate_sitemap, APIException
@@ -178,3 +180,64 @@ def update_user_profile():
 
     db.session.commit()
     return jsonify(user.serialize()), 200
+   
+@api.route('/ai/explain', methods=['POST'])
+@jwt_required()
+def get_ai_explanation():
+    print("--- Multimodal AI Request Received (Qwen-VL) ---")
+    
+    api_key = os.getenv("HUGGINGFACE_API_KEY")
+    if not api_key:
+        return jsonify({"error": "API Key missing"}), 500
+
+    body = request.get_json()
+    artwork_name = body.get("name")
+    image_url = body.get("image_url") # <--- Recibimos la URL de la imagen
+
+    # Hugging Face Router endpoint (OpenAI Compatible)
+    API_URL = "https://router.huggingface.co/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    # Payload para modelo de VISION
+    payload = {
+        "model": "Qwen/Qwen3-VL-235B-A22B-Instruct:novita",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text", 
+                        "text": (
+                            f"You are a professional MET museum curator. Provide a sophisticated and "
+                            f"complete insight about the artwork '{artwork_name}' in 3 to 4 sentences, "
+                            f"focusing on its visual style and historical significance. Ensure your "
+                            f"response is fully concluded and does not exceed 500 words."
+                        )
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": { "url": image_url } # <--- La IA 've' la imagen real
+                    }
+                ]
+            }
+        ],
+        "max_tokens": 500
+    }
+
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+        
+        if response.status_code == 200:
+            result = response.json()
+            ai_text = result['choices'][0]['message']['content'].strip()
+            return jsonify({"insight": ai_text}), 200
+        else:
+            print(f"HF Router Error {response.status_code}: {response.text}")
+            return jsonify({"error": "AI curator is busy observing the gallery"}), response.status_code
+
+    except Exception as e:
+        print(f"SYSTEM ERROR: {str(e)}")
+        return jsonify({"error": "Connection to Vision AI failed"}), 500
