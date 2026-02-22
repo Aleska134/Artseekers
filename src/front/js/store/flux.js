@@ -5,18 +5,22 @@ const getState = ({ getStore, getActions, setStore }) => {
             artPieces: [],
             artDepartments: [],
             bool: false,
-            user: {} // Profile and favorites will be stored here
+            user: {} // Stores profile data and favorites
         },
         actions: {
-        
-        syncTokenFromSessionStorage: async () => {
-            const token = sessionStorage.getItem("token");
-            if (token && token !== "" && token !== undefined) {
-            setStore({ token: token, bool: true });
-        
-            await getActions().getUserProfile(); 
-    }
-},
+            /**
+             * AUTH HYDRATION:
+             * Syncs the session token from Storage to the Global Store
+             * and fetches the user profile if the token is valid.
+             */
+            syncTokenFromSessionStorage: async () => {
+                const token = sessionStorage.getItem("token");
+                if (token && token !== "" && token !== undefined) {
+                    setStore({ token: token, bool: true });
+                    // Fetch profile immediately to ensure UI is in sync
+                    await getActions().getUserProfile(); 
+                }
+            },
 
             onLoginClick: async (email, password) => {
                 try {
@@ -30,8 +34,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                         const data = await response.json();
                         sessionStorage.setItem("token", data.access_token);
                         setStore({ token: data.access_token, bool: true });
-                        
-                        // load user profile immediately after login to sync favorites
                         await getActions().getUserProfile();
                         return true;
                     }
@@ -49,15 +51,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             getUserProfile: async () => {
                 const store = getStore();
-                if (!store.token) return;
+                const token = sessionStorage.getItem("token");
+                if (!token) return;
 
                 try {
                     const response = await fetch(`${process.env.BACKEND_URL}/api/user/profile`, { 
-                        headers: { Authorization: `Bearer ${store.token}` }
+                        headers: { Authorization: `Bearer ${token}` }
                     });
+
+                    if (response.status === 401) {
+                        // Handle expired token by forcing logout
+                        getActions().logOut(); 
+                        return;
+                    }
+
                     if (response.ok) {
                         const data = await response.json();
-                        setStore({ user: data }); // store the entire user object, including favorites, in the global store
+                        setStore({ user: data });
                     }
                 } catch (error) {
                     console.error("Error fetching user profile:", error);
@@ -84,12 +94,41 @@ const getState = ({ getStore, getActions, setStore }) => {
                         method: 'POST',
                         headers: { Authorization: `Bearer ${store.token}` }
                     });
+
                     if (response.ok) {
                         const data = await response.json();
-                        setStore({ user: data }); // backend returns updated user profile with new favorites list, so we update the store with that data to keep it in sync
+                        setStore({ user: data });
+                    } else if (response.status === 401) {
+                        getActions().logOut(); 
                     }
                 } catch (error) {
                     console.error("Error adding favorite:", error);
+                }
+            },
+
+            updateUserProfile: async (updatedData) => {
+                const store = getStore();
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/user/update`, {
+                        method: 'PUT',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${store.token}`
+                        },
+                        body: JSON.stringify(updatedData)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ user: data });
+                        return true;
+                    } else if (response.status === 401) {
+                        getActions().logOut(); 
+                    }
+                    return false;
+                } catch (error) {
+                    console.error("Error updating profile:", error);
+                    return false;
                 }
             },
 
@@ -100,9 +139,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                         method: 'DELETE',
                         headers: { Authorization: `Bearer ${store.token}` }
                     });
+
                     if (response.ok) {
                         const data = await response.json();
                         setStore({ user: data });
+                    } else if (response.status === 401) {
+                        getActions().logOut(); 
                     }
                 } catch (error) {
                     console.error("Error deleting favorite:", error);

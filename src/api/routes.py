@@ -156,4 +156,25 @@ def deleteFavorite(exhibit_museum_id):
 
     return jsonify(user.serialize()), 200
     
+@api.route('/user/update', methods=['PUT'])
+@jwt_required()
+def update_user_profile():
+    current_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_email).first()
 
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    body = request.get_json()
+    
+    # Update fields if they exist in the request
+    if "name" in body: user.name = body["name"]
+    if "profile_image" in body: user.profile_image = body["profile_image"]
+    
+    if "username" in body and body["username"] != user.username:
+        if User.query.filter_by(username=body["username"]).first():
+            return jsonify({"message": "Username taken"}), 409
+        user.username = body["username"]
+
+    db.session.commit()
+    return jsonify(user.serialize()), 200

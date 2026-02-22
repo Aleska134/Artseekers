@@ -1,46 +1,105 @@
 /* 
     PROFILE PAGE STYLES
     Theme: Modern Professional Gallery Profile
+    Principles: DRY (Don't Repeat Yourself) & Responsive Design
 */
 
+/* 1. PAGE LAYOUT */
 .profile-page-container {
     background-color: #f8f9fa;
     min-height: 100vh;
 }
 
-/* Updated Gradient: More subtle and modern */
 .gradient-custom-2 {
     background: #1a1a1a;
     background: linear-gradient(to right, #000000, #434343);
-    padding: 60px 0;
+    padding: 40px 0; /* Reduced for mobile, increased in media query */
 }
 
-/* The Main Profile Card */
+/* 2. HEADER & AVATAR AREA */
 .profile-card {
     background: #fff;
     border-radius: 0;
     border: 1px solid #ddd;
+    overflow: hidden;
 }
 
-/* Favorite Art Cards: Ensuring uniform size */
+.profile-header-black {
+    background-color: #000;
+    min-height: 200px;
+    padding: 20px 0;
+}
+
+/* The wrapper keeps the image and the edit button together as one unit */
+.profile-avatar-wrapper {
+    position: relative;
+    width: 150px;
+    z-index: 10;
+}
+
+/* "Floating" effect only on desktop to avoid overlapping text on mobile */
+@media (min-width: 768px) {
+    .profile-avatar-wrapper {
+        margin-bottom: -50px; 
+        margin-left: 2.5rem;
+    }
+    .gradient-custom-2 {
+        padding: 60px 0;
+    }
+}
+
+.avatar-container {
+    width: 150px;
+    height: 150px;
+    border: 5px solid #fff;
+    background-color: #eee;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.profile-img-style {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Prevents distortion */
+}
+
+.edit-btn-text {
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.7rem !important;
+    border-radius: 0;
+}
+
+/* 3. USER INFO & FORMS */
+.edit-form-inline {
+    background-color: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    max-width: 450px;
+}
+
+.stats-bar {
+    background-color: #F8F9FA;
+}
+
+/* 4. FAVORITES GALLERY (The Grid) */
 .artwork-favorite-card {
     display: flex;
     flex-direction: column;
-    height: 420px; /* Fixed height for the whole card */
-    border: 8px solid #000 !important; /* "Museum frame" style */
+    height: 420px; /* Forces all cards to be identical height */
+    border: 8px solid #000 !important;
     border-radius: 0;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     background: #fff;
 }
 
 .artwork-favorite-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
 }
 
-/* Image Container: Forcing a specific aspect ratio */
 .img-container {
-    height: 250px; /* Fixed height for the image area */
+    height: 250px; /* Standardized image area */
     width: 100%;
     overflow: hidden;
     background-color: #f0f0f0;
@@ -50,15 +109,14 @@
 .artwork-img-profile {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* This is the key: it crops the image to fill the space without distortion */
+    object-fit: cover;
     transition: transform 0.5s ease;
 }
 
 .artwork-favorite-card:hover .artwork-img-profile {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
-/* Card Body: Pushing the delete button to the bottom */
 .artwork-body {
     padding: 12px;
     display: flex;
@@ -71,21 +129,20 @@
     font-size: 0.9rem;
     font-weight: bold;
     text-align: center;
-    color: #333;
+    color: #1a1a1a;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limits title to 2 lines */
+    -webkit-line-clamp: 2; /* Truncates long titles to 2 lines */
     -webkit-box-orient: vertical;
     overflow: hidden;
-    margin-bottom: 10px;
 }
 
-/* Delete Button Styling */
 .remove-btn {
     background-color: transparent;
     color: #dc3545;
     border: 1px solid #dc3545;
-    padding: 5px;
-    font-size: 0.8rem;
+    border-radius: 0;
+    padding: 6px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.3s ease;
@@ -96,10 +153,15 @@
     color: #fff;
 }
 
-/* Responsive Grid */
-@media (max-width: 768px) {
+/* 5. RESPONSIVE ADJUSTMENTS */
+@media (max-width: 767px) {
     .artwork-favorite-card {
-        height: auto;
-        margin-bottom: 20px;
+        height: auto; /* Allow natural height on small screens if needed */
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    
+    .profile-header-black {
+        text-align: center;
     }
 }
