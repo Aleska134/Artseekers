@@ -80,7 +80,7 @@ npm start
 
 <div align="center">
   <p><i>Developed and architected by <b>Aleska Braschi</b> | Software Engineering Portfolio</i></p>
-  <a href="https://www.linkedin.com/in/aleskabraschi">
+  <a href="https://www.linkedin.com/in/aleska-p-braschi">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
   </a>
   <a href="https://github.com/Aleska134">
