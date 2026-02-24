@@ -9,73 +9,106 @@
   </p>
 </div>
 
-<hr />
+<hr>
 
-## 🌟 Project Overview
-**ArtSeekers** is a professional explorer for the **Metropolitan Museum of Art (The MET)** collection. While it started as a collaborative bootcamp project, I have independently refactored its entire core to meet professional standards, focusing on data optimization, advanced AI integrations, and high-end UI responsiveness.
+<h2>🌟 Project Overview</h2>
+<p>
+  <strong>ArtSeekers</strong> is a professional-grade gallery explorer for the <strong>Metropolitan Museum of Art</strong> collection. 
+  Originally a bootcamp project, I independently refactored the entire system to meet modern software engineering standards, 
+  focusing on <strong>algorithmic optimization</strong>, <strong>Computer Vision AI</strong>, and <strong>secure data architectures</strong>.
+</p>
 
-<<<<<<< HEAD
-## 🚀 The Engineering Journey (Key Optimizations)
-=======
-<h2>🧠 Engineering Highlights </h2>
-<p>I focused on solving specific architectural and algorithmic challenges to ensure scalability and performance:</p>
->>>>>>> 687453896f12436d5449eaa489e2df2fed1cb793
+<h2>🚀 Engineering Highlights (Computer Science Focus)</h2>
 
-As a Computer Science student, I treated this project as a challenge to solve real-world performance and security issues:
+<h3>1. Breaking the Performance Bottleneck ($O(N+M)$)</h3>
+<p>
+  Initially, the API struggled with data serialization using nested loops, resulting in $O(N \times M)$ complexity. 
+  I refactored the backend logic to implement <strong>Hash Map Lookups</strong>, reducing complexity to <strong>Linear Time ($O(N + M)$)</strong>.
+</p>
 
-### 1. Breaking the Performance Bottleneck ($O(N+M)$)
-Initially, the API struggled with data serialization using nested loops ($O(N \times M)$). I refactored the backend logic to implement **Hash Map (Dictionary) Lookups**, reducing complexity to **Linear Time ($O(N + M)$)**. This resulted in significantly faster page loads for the gallery.
+<pre><code>
+# Before: O(N×M) - Nested iteration
+for artwork in artworks:
+    for metadata in all_metadata:
+        if artwork.id == metadata.artwork_id:
+            # process...
 
-### 2. Giving the App "Eyes" (Multimodal AI)
-I integrated the **Qwen-VL Vision LLM** through the Hugging Face API. Unlike basic chatbots, ArtSeekers can actually "see" the artwork. When you ask for an insight, the model analyzes the pixels of the image in real-time to provide context-aware curatorial descriptions.
-
-### 3. Professional Data Engineering (ETL Pipeline)
-I developed a custom Python seeder (`popdb.py`) to handle the **Extract, Transform, and Load** process from the MET's public API. It includes:
-*   **Throttling:** To respect the museum's server limits.
-*   **Data Sanitization:** Filtering out incomplete records (no author or image) to ensure gallery quality.
-
-### 4. Security First (Encryption)
-I replaced plain-text storage with **Scrypt Hashing** for passwords. Even if the database were compromised, user credentials remain mathematically protected.
-
----
-
-## 🛠️ Tech Stack
-*   **Frontend:** React.js + Context API (Flux Pattern) + Bootstrap 5.
-*   **Backend:** Python 3 + Flask + SQLAlchemy (ORM).
-*   **Database:** SQLite (Local Dev) / PostgreSQL (Ready for Production).
-*   **AI Engine:** Hugging Face Multimodal Inference API (Qwen-Vision).
-*   **Mailing:** EmailJS for secure, bot-proof contact inquiries.
-
-## 📱 User Experience & Design
-*   **Museum-Grade UI:** A minimalist "Dark & Gold" theme designed to let the artwork be the protagonist.
-*   **Responsive Grid:** Optimized for mobile viewing with a 2-column layout and scrollable metadata containers for long titles.
-*   **Session Persistence:** Intelligent JWT hydration that keeps you logged in even after refreshing the page.
-
----
-
-## ⚙️ Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/Aleska134/Artseekers.git
-
-# Backend Setup
-pipenv install
-pipenv shell
-python src/popdb.py  # Populate the gallery
-python src/app.py    # Start the server
-
-# Frontend Setup (New Terminal)
-npm install
-npm start
-<hr />
-<div align="center">
-<p><i>Developed and optimized with 🧠 and 🎨 by <b>Aleska Braschi</b></i></p>
-<a href="https://www.linkedin.com/in/aleska-p-braschi">
-<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
-</a>
-<a href="https://github.com/Aleska134">
-<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
-</a>
-</div>
+# After: O(N+M) - Hash map lookup
+metadata_map = {m.artwork_id: m for m in all_metadata}
+for artwork in artworks:
+    metadata = metadata_map.get(artwork.id)
+    # process...
 </code></pre>
+
+<h3>2. Multimodal AI Integration (Qwen-VL)</h3>
+<p>
+  I integrated the <strong>Qwen-VL Vision LLM</strong> via Hugging Face. 
+  Unlike standard chatbots, ArtSeekers performs real-time visual analysis of artwork pixels to provide context-aware curatorial insights.
+</p>
+
+<h3>3. Professional Data Engineering (ETL Pipeline)</h3>
+<p>
+  Developed a custom Python seeder (<code>popdb.py</code>) to manage the <strong>Extract, Transform, and Load</strong> process from the MET's REST API.
+</p>
+<ul>
+  <li><strong>Throttling:</strong> Respects API constraints with configurable delays.</li>
+  <li><strong>Data Validation:</strong> Filters records missing critical fields like images or artist attribution.</li>
+</ul>
+
+<h3>4. Security First</h3>
+<ul>
+  <li><strong>Encryption:</strong> Implemented <strong>Scrypt Hashing</strong> for password storage, ensuring credentials are mathematically protected against brute-force attacks.</li>
+  <li><strong>Session Management:</strong> Secure authentication via <strong>JWT (JSON Web Tokens)</strong> with state hydration to persist sessions across refreshes.</li>
+</ul>
+
+<hr>
+
+<h2>🛠️ Tech Stack</h2>
+<ul>
+  <li><strong>Frontend:</strong> React.js + Context API (Flux Pattern) + Bootstrap 5.</li>
+  <li><strong>Backend:</strong> Python 3 + Flask + SQLAlchemy (ORM).</li>
+  <li><strong>Database:</strong> SQLite (Dev) / PostgreSQL (Production ready).</li>
+  <li><strong>AI Engine:</strong> Hugging Face Multimodal Inference API (Qwen-Vision).</li>
+</ul>
+
+<hr>
+
+<h2>🔄 Project Evolution</h2>
+<p>
+  This project began as a collaborative bootcamp effort at 4Geeks Academy. 
+  Following the bootcamp, I took full ownership of the codebase and independently:
+</p>
+<ul>
+  <li>Refactored the backend for high-performance data handling.</li>
+  <li>Implemented the entire AI vision integration.</li>
+  <li>Standardized the security and authentication protocols.</li>
+  <li>Optimized the frontend state management architecture.</li>
+</ul>
+
+<hr>
+
+<h2>⚙️ Quick Start</h2>
+<pre><code>
+# 1. Clone & Setup
+git clone https://github.com/Aleska134/Artseekers.git
+pipenv install && pipenv shell
+
+# 2. Seed & Run
+python src/popdb.py  # Populate with validated MET data
+python src/app.py    # Start Backend
+
+# 3. Launch Frontend (New Terminal)
+npm install && npm start
+</code></pre>
+
+<hr>
+
+<div align="center">
+  <p><i>Developed and architected by <b>Aleska Braschi</b> | Computer Science @ MDC/FIU</i></p>
+  <a href="https://www.linkedin.com/in/aleska-p-braschi">
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+  </a>
+  <a href="https://github.com/Aleska134">
+    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+  </a>
+</div>
