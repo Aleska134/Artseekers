@@ -270,20 +270,3 @@ def change_password():
 
     return jsonify({"message": "Password updated successfully"}), 200
 
-# Password reset flow using JWT tokens for secure password updates without exposing sensitive information.
-
-# @api.route('/forgot-password', methods=['POST'])
-# def forgot_password():
-#     email = request.json.get("email")
-#     user = User.query.filter_by(email=email).first()
-
-#     if not user:
-#         return jsonify({"message": "If the email exists, a reset link will be sent"}), 200
-
-#     # Fast expiring token for password reset (15 minutes)
-#     expires = timedelta(minutes=15)
-#     reset_token = create_access_token(identity=email, expires_delta=expires)
-
-#     # Here you would typically send the reset_token via email using a service like EmailJS or SendGrid.
-#     # Send token to frontend for demonstration purposes (in production, this should be sent via email only)
-#     return jsonify({"reset_token": reset_token}), 200

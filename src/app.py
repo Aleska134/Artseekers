@@ -13,6 +13,9 @@ from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key-for-testing")  # Use env variable or default for testing
+jwt = JWTManager(app)
+
 # 1. Database Configuration
 db_url = os.getenv("DATABASE_URL")
 

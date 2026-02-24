@@ -1,89 +1,76 @@
 <div align="center">
-  <h1>🖼️ ArtSeekers: AI-Powered MET Museum Engine</h1>
-  <p><strong>A high-performance Full-Stack platform featuring Multimodal AI and optimized data architectures.</strong></p>
+  <h1>🖼️ ArtSeekers: The AI-Powered Gallery</h1>
+  <p><strong>A high-performance museum explorer that bridges classical art and modern engineering.</strong></p>
   
   <p>
-    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-    <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
-    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
-    <img src="https://img.shields.io/badge/Vision_AI-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="AI">
-    <img src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
-    <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" alt="JWT">
+    <img src="https://img.shields.io/badge/Status-Production--Ready-success?style=flat-square" alt="Status">
+    <img src="https://img.shields.io/badge/Architecture-Full--Stack-blue?style=flat-square" alt="Architecture">
+    <img src="https://img.shields.io/badge/AI-Multimodal%20Vision-orange?style=flat-square" alt="AI">
   </p>
 </div>
 
 <hr />
 
-<h2>📖 Project Overview</h2>
-<p>
-  ArtSeekers is a professional-grade gallery explorer for the <strong>Metropolitan Museum of Art</strong> collection. Originally a group project, I refactored the entire system to meet modern software engineering standards. This version introduces <strong>Computer Vision AI</strong>, an optimized <strong>$O(N+M)$ backend</strong>, and a robust <strong>User Profile Management</strong> system.
-</p>
+## 🌟 Project Overview
+**ArtSeekers** is a professional explorer for the **Metropolitan Museum of Art (The MET)** collection. While it started as a collaborative bootcamp project, I have independently refactored its entire core to meet professional standards, focusing on data optimization, advanced AI integrations, and high-end UI responsiveness.
 
-<h2>🧠 Engineering Highlights (CS Focus)</h2>
-<p>I focused on solving specific architectural and algorithmic challenges to ensure scalability and performance:</p>
+## 🚀 The Engineering Journey (Key Optimizations)
 
-<table>
-  <tr>
-    <td width="30%"><b>Multimodal AI Integration</b></td>
-    <td>Implemented an <b>AI Virtual Curator</b> using the <b>Qwen-Vision LLM</b>. Unlike standard text-based AI, this model performs real-time visual analysis of artwork images via a <b>Hugging Face Multimodal API</b> to provide historical and stylistic insights.</td>
-  </tr>
-  <tr>
-    <td><b>Algorithmic Optimization</b></td>
-    <td>Refactored API endpoints to replace $O(N \times M)$ nested loops with <b>Hash Map (Dictionary) Lookups</b>. This reduced time complexity to <b>$O(N + M)$</b> during data serialization, drastically improving response times for large museum datasets.</td>
-  </tr>
-  <tr>
-    <td><b>Full CRUD & State Persistence</b></td>
-    <td>Developed a secure profile management system allowing users to update their credentials and profile images. Implemented <b>State Hydration</b> in React to ensure JWT sessions and user data persist across browser refreshes.</td>
-  </tr>
-  <tr>
-    <td><b>Automated ETL Pipeline</b></td>
-    <td>Built a custom Python seeder (<code>popdb.py</code>) that extracts, sanitizes, and loads data from the MET API. It includes <b>Throttling</b> and <b>Exponential Backoff</b> logic to manage rate-limiting and ensure 100% data integrity.</td>
-  </tr>
-</table>
+As a Computer Science student, I treated this project as a challenge to solve real-world performance and security issues:
 
-<h2>🛠️ Tech Stack</h2>
-<ul>
-  <li><b>Frontend:</b> React.js, Context API (Flux Pattern), React Router, Bootstrap 5 (Mobile-First Design).</li>
-  <li><b>Backend:</b> Python 3, Flask, Flask-SQLAlchemy (ORM), Flask-JWT-Extended.</li>
-  <li><b>AI/Integrations:</b> Qwen3-VL (Vision-Language Model), Hugging Face Inference API, EmailJS.</li>
-  <li><b>Database:</b> SQLite (Development) / PostgreSQL (Production ready).</li>
-</ul>
+### 1. Breaking the Performance Bottleneck ($O(N+M)$)
+Initially, the API struggled with data serialization using nested loops ($O(N \times M)$). I refactored the backend logic to implement **Hash Map (Dictionary) Lookups**, reducing complexity to **Linear Time ($O(N + M)$)**. This resulted in significantly faster page loads for the gallery.
 
-<h2>🖼️ Key Features</h2>
-<ul>
-  <li><b>AI Curator:</b> Real-time visual analysis of artworks using state-of-the-art Computer Vision.</li>
-  <li><b>Interactive Profile:</b> Users can customize their identity, upload profile images, and manage a private "Favorites" collection.</li>
-  <li><b>Department Explorer:</b> Categorized navigation across the MET’s 19+ specialized departments.</li>
-  <li><b>Professional Security:</b> Protected routes via Higher-Order Components (HOCs) and secure JWT-based authentication.</li>
-</ul>
+### 2. Giving the App "Eyes" (Multimodal AI)
+I integrated the **Qwen-VL Vision LLM** through the Hugging Face API. Unlike basic chatbots, ArtSeekers can actually "see" the artwork. When you ask for an insight, the model analyzes the pixels of the image in real-time to provide context-aware curatorial descriptions.
 
-<h2>⚙️ Installation & Setup</h2>
-<pre><code>
-# 1. Clone the repository
+### 3. Professional Data Engineering (ETL Pipeline)
+I developed a custom Python seeder (`popdb.py`) to handle the **Extract, Transform, and Load** process from the MET's public API. It includes:
+*   **Throttling:** To respect the museum's server limits.
+*   **Data Sanitization:** Filtering out incomplete records (no author or image) to ensure gallery quality.
+
+### 4. Security First (Encryption)
+I replaced plain-text storage with **Scrypt Hashing** for passwords. Even if the database were compromised, user credentials remain mathematically protected.
+
+---
+
+## 🛠️ Tech Stack
+*   **Frontend:** React.js + Context API (Flux Pattern) + Bootstrap 5.
+*   **Backend:** Python 3 + Flask + SQLAlchemy (ORM).
+*   **Database:** SQLite (Local Dev) / PostgreSQL (Ready for Production).
+*   **AI Engine:** Hugging Face Multimodal Inference API (Qwen-Vision).
+*   **Mailing:** EmailJS for secure, bot-proof contact inquiries.
+
+## 📱 User Experience & Design
+*   **Museum-Grade UI:** A minimalist "Dark & Gold" theme designed to let the artwork be the protagonist.
+*   **Responsive Grid:** Optimized for mobile viewing with a 2-column layout and scrollable metadata containers for long titles.
+*   **Session Persistence:** Intelligent JWT hydration that keeps you logged in even after refreshing the page.
+
+---
+
+## ⚙️ Quick Start
+
+```bash
+# Clone the repository
 git clone https://github.com/Aleska134/Artseekers.git
 
-# 2. Setup the Backend
+# Backend Setup
 pipenv install
 pipenv shell
-export FLASK_APP=src/app.py
-flask db upgrade
-python src/popdb.py
+python src/popdb.py  # Populate the gallery
+python src/app.py    # Start the server
 
-# 3. Start the Servers
-python src/app.py
-# (In another terminal)
+# Frontend Setup (New Terminal)
 npm install
 npm start
-</code></pre>
-
 <hr />
-
 <div align="center">
-  <p><i>Developed and architected by <b>Aleska Braschi</b> | Software Engineering Portfolio</i></p>
-  <a href="https://www.linkedin.com/in/aleska-p-braschi">
-    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
-  </a>
-  <a href="https://github.com/Aleska134">
-    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
-  </a>
+<p><i>Developed and optimized with 🧠 and 🎨 by <b>Aleska Braschi</b></i></p>
+<a href="https://www.linkedin.com/in/aleska-p-braschi">
+<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
+<a href="https://github.com/Aleska134">
+<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+</a>
 </div>
+</code></pre>
