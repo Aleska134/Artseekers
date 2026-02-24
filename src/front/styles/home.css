@@ -1,176 +1,132 @@
+/* 
+    HOME PAGE STYLES
+    Theme: Modern Museum Landing Page
+*/
+
+/* 1. HERO SECTION (Main Entrance) */
+.hero-section {
+    min-height: 80vh; /* Using min-height to prevent layout shift on mobile browsers */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px;
+    text-align: center;
+}
+
+/* Animated Title: Gold-Blue Gradient Loop */
 .animate-charcter {
-  background-image: linear-gradient(
-    -225deg,
-    #1078ce 0%,
-    #0b4877 29%,
-    #e79c08 67%,
-    #deb887 100%
-  );
-  background-size: auto auto;
-  background-clip: border-box;
-  background-size: 200% auto;
-  color: #fff;
-  background-clip: text;
-  text-emphasis-color: transparent;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: textclip 2s linear infinite;
-  display: inline-block;
-  font-size: 80px;
-  margin-top: 55px;
-}
-
-/* Pantallas pequeñas (teléfonos) */
-@media (max-width: 600px) {
-  .info p {
-    font-size: 14px; 
-    margin-bottom: 1rem;
-    text-align: justify; /* O 'left', según lo que mejor se vea en dispositivos móviles */
-  }
-  .carousel img {
-    height: 100px; /* Un valor más pequeño para pantallas más pequeñas */
-  }
-
-}
-
-/* Media query para pantallas medianas a grandes */
-@media (min-width: 600px) {
-  .animate-charcter {
-    font-size: 190px; /* Ajusta esto según necesites */
-    margin-top: 20px;
-  }
-  
-}
-
-.info {
-  font-size: 1.3rem; 
- 
-}
-
-/* Media query para pantallas muy grandes */
-@media (min-width: 1200px) {
-  .animate-charcter {
-    font-size: 190px; 
-  }
+    background-image: linear-gradient(
+        -225deg,
+        #c5a059 0%, /* Gold */
+        #ffffff 29%, /* White highlight */
+        #1078ce 67%, /* Brand Blue */
+        #c5a059 100% /* Gold */
+    );
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textclip 3s linear infinite;
+    display: inline-block;
+    font-weight: bold;
+    font-family: 'Georgia', serif;
 }
 
 @keyframes textclip {
-  to {
-    background-position: 200% center;
-  }
+    to { background-position: 200% center; }
 }
 
-#list {
-  body {
-    font-family: sans-serif;
-    font-family: "Quicksand", sans-serif;
-    color: #333;
-    text-indent: 1.5em;
-    font-size: 1.1em;
-    background-color: #eee;
-    width: 96vw;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  span b {
-    color: #000;
-  }
-  h1 {
-    font-size: 3em;
-    margin-bottom: 0.2em;
-    color: #29627d;
-    text-align: center;
-  }
-  div {
-    background-color: #fff;
-    border: 1px solid #fff;
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
-    text-align: center;
-  }
-  div:focus {
-    outline: none;
-  }
-  div div {
-    position: relative;
-    background-color: burlywood;
-    color: #fff;
-    margin: 16px;
-    border-radius: 999px;
-    line-height: 3em;
-    border: none;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
-      rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
-  }
-  div b {
-    text-decoration: line-through;
-    font-weight: normal;
-    display: none;
-  }
+/* Dynamic Font Sizes for the Main Title */
+@media (max-width: 600px) {
+    .animate-charcter { font-size: 3.5rem; margin-top: 20px; }
+}
+@media (min-width: 601px) {
+    .animate-charcter { font-size: 8rem; }
+}
+@media (min-width: 1200px) {
+    .animate-charcter { font-size: 11rem; }
 }
 
+/* 2. ABOUT US SECTION (The "Museum Frame" Logic) */
 .rowAboutUs {
-  margin: 5vw;
-  padding: 5vw;
-  /* margin: 100px; */
-  background-color: rgba(222, 184, 135, 0.7);
-  /* padding: 50px; */
-  border: 15px solid black;
-  box-shadow: 10px 10px 20px rgba(17, 165, 201, 0.4);
+    margin: 5vw;
+    padding: 5vw;
+    background-color: rgba(255, 255, 255, 0.9); /* Solid white for readability */
+    border: 15px solid #000; /* Professional Gallery Frame */
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5);
+    color: #1a1a1a;
+}
+
+.info p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .rowAboutUs {
+        margin: 20px 10px;
+        padding: 20px;
+        border-width: 10px;
+    }
+    .info p {
+        font-size: 0.95rem;
+        text-align: left;
+    }
+}
+
+/* 3. FEATURES LIST SECTION */
+#list {
+    margin: 50px auto;
+    max-width: 800px;
+    padding: 20px;
 }
 
 .lineHome {
-  background-color: burlywood;
+    background-color: #000; /* Black background for contrast */
+    color: #c5a059; /* Gold text */
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 0;
+    font-family: 'Monaco', monospace;
+    border-left: 5px solid #c5a059;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
 }
 
+/* 4. CAROUSEL SECTION */
 .carousel {
-  /* transform: scale(0.5);
-  height: 900px;
-  width: 900px;
-  align-items: center;
-  margin-left: 20%; */
-  max-width:35vw; /* Ajusta a la anchura máxima deseada */
-  margin: auto; /* Esto centra el carrusel horizontalmente */
-  position: relative;
+    max-width: 80vw; /* Increased from 35vw to fit better on all devices */
+    margin: 50px auto;
+    position: relative;
+    border: 10px solid #000;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
+
 .carousel img {
-  max-width: 100%; /* Hace que las imágenes sean responsivas */
-  height: auto; /* Mantiene la proporción de las imágenes */
-}
-.carousel-control-prev, .carousel-control-next {
-  position: absolute;
-  top: 50%; /* Centra verticalmente */
-  transform: translateY(-50%); /* Ajusta la posición para que 'top' se refiera al centro de las flechas */
-}
-.carousel-control-prev {
-  left: 0% !important;
+    width: 100%;
+    height: 400px; /* Standardized height */
+    object-fit: cover; /* Prevents stretching */
 }
 
-.carousel-control-next {
-  right: 0% !important;
-}
-.carousel-control-prev-icon, .carousel-control-next-icon {
-  /* Ajustes de tamaño aquí, por ejemplo: */
-  width: 30px;
-  height: 30px;
+/* Responsive carousel adjustments for mobile */
+@media (max-width: 767px) {
+    .carousel {
+        max-width: 95vw;
+    }
+    .carousel img {
+        height: 250px;
+    }
+    .carousel-control-prev-icon, 
+    .carousel-control-next-icon {
+        width: 20px;
+        height: 20px;
+    }
 }
 
-
-/* .backgroundHome {
-  background-image: url(https://64.media.tumblr.com/d307e7b2d350aac140ab2605ffa80c11/tumblr_ou89v41vtr1s0e6wno1_500.jpg);
-  background-size: 100%;
-  background-repeat: no-repeat;
-  background: #deb887; */
-/* Chrome 10-25, Safari 5.1-6 */
-/* background: -webkit-linear-gradient(
-    to right,
-    rgba(222, 184, 135, 1),
-    rgba(166, 193, 238, 1)
-  ); */
-/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-/* background: linear-gradient(
-    to right,
-    rgba(222, 184, 135, 1),
-    rgba(166, 193, 238, 1)
-  );
-} */
+/* Utility Class for White Background Sections */
+.bg-gallery-white {
+    background-color: #ffffff;
+    border: 5px solid #000;
+    padding: 20px;
+    margin: 20px;
+}

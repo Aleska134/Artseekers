@@ -7,7 +7,7 @@ with app.app_context():
     uri = app.config['SQLALCHEMY_DATABASE_URI']
     print(f"\n1. DATABASE URI in Flask: {uri}")
     
-    # Intentamos ver qué hay dentro de ese archivo
+    # try to connect and inspect the database
     try:
         inspector = inspect(db.engine)
         tables = inspector.get_table_names()
@@ -24,7 +24,7 @@ with app.app_context():
         print(f"Error connecting: {e}")
 
 print(f"\n4. Checking physical file on disk...")
-# Extraemos la ruta del URI (quitando sqlite:///)
+# Extract the path from the URI and check if the file exists (for SQLite)
 path = uri.replace("sqlite:///", "").replace("sqlite://", "")
 if os.path.exists(path):
     print(f"   File exists at: {path}")

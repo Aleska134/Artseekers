@@ -8,6 +8,8 @@ from api.models import db, User, Exhibits, Departments
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from datetime import timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Blueprint('api', __name__)
 
@@ -18,22 +20,17 @@ CORS(api)
 def sign_in():
     body = request.json
     if body is None:
-        return jsonify({"message" : "Please provide a valid email and password!"}), 400
-    email = body["email"]
-    password = body["password"]
-    user = User.query.filter_by(email = email).first()
-    if user is None:
-        return jsonify({"message" : "Email does not exist in our database"}),404
-    if user.password != password:
-        return jsonify({"message" : "Wrong password"}),401
+        return jsonify({"message" : "Provide email and password"}), 400
     
-    access_token = create_access_token(identity=email)
-
-    response_body = {
-        "message": "You successfully signed in your account","access_token": access_token
-    }
-
-    return jsonify(response_body), 200
+    user = User.query.filter_by(email=body["email"]).first()
+    
+    # CS CONCEPT: Constant-time comparison
+    # check_password_hash prevents timing attacks
+    if user is None or not check_password_hash(user.password, body["password"]):
+        return jsonify({"message" : "Invalid email or password"}), 401
+    
+    access_token = create_access_token(identity=user.email)
+    return jsonify({"access_token": access_token}), 200
 
 
 
@@ -41,23 +38,30 @@ def sign_in():
 def sign_up():
     body = request.json
     if body is None:
-        return jsonify({"message" : "Please provide a valid email and password!"}), 400
-    name = body["name"]
-    username = body["username"]
-    email = body["email"]
-    password = body["password"]
-    check_user = User.query.filter_by(email = email).first()
+        return jsonify({"message" : "Please provide data"}), 400
+    
+    # Check if user exists
+    check_user = User.query.filter_by(email=body["email"]).first()
     if check_user:
-        return jsonify({"message" : "This user already exist"}),409
-    new_user = User(**body, is_active = True)
+        return jsonify({"message" : "User already exists"}), 409
+
+    # CS CONCEPT: Password Hashing
+    # We never store the actual password, only its salted hash.
+    hashed_password = generate_password_hash(body["password"])
+    
+    # We create the user with the HASHED password
+    new_user = User(
+        name=body["name"],
+        username=body["username"],
+        email=body["email"],
+        password=hashed_password, 
+        is_active=True
+    )
+    
     db.session.add(new_user)
     db.session.commit()
 
-    response_body = {
-        "message": "Account successfully created",
-    }
-
-    return jsonify(response_body), 201
+    return jsonify({"message": "Account successfully created"}), 201
 
 @api.route('/user/profile', methods=['GET']) 
 @jwt_required()
@@ -241,3 +245,45 @@ def get_ai_explanation():
     except Exception as e:
         print(f"SYSTEM ERROR: {str(e)}")
         return jsonify({"error": "Connection to Vision AI failed"}), 500
+    
+    
+@api.route('/user/change-password', methods=['PUT'])
+@jwt_required()
+def change_password():
+    current_email = get_jwt_identity()
+    user = User.query.filter_by(email=current_email).first()
+    body = request.json
+
+    old_password = body.get("old_password")
+    new_password = body.get("new_password")
+
+    if not old_password or not new_password:
+        return jsonify({"message": "Missing data"}), 400
+
+    # 1. Verify current password
+    if not check_password_hash(user.password, old_password):
+        return jsonify({"message": "Current password is incorrect"}), 400
+
+    # 2. Hash and save the new one
+    user.password = generate_password_hash(new_password)
+    db.session.commit()
+
+    return jsonify({"message": "Password updated successfully"}), 200
+
+# Password reset flow using JWT tokens for secure password updates without exposing sensitive information.
+
+# @api.route('/forgot-password', methods=['POST'])
+# def forgot_password():
+#     email = request.json.get("email")
+#     user = User.query.filter_by(email=email).first()
+
+#     if not user:
+#         return jsonify({"message": "If the email exists, a reset link will be sent"}), 200
+
+#     # Fast expiring token for password reset (15 minutes)
+#     expires = timedelta(minutes=15)
+#     reset_token = create_access_token(identity=email, expires_delta=expires)
+
+#     # Here you would typically send the reset_token via email using a service like EmailJS or SendGrid.
+#     # Send token to frontend for demonstration purposes (in production, this should be sent via email only)
+#     return jsonify({"reset_token": reset_token}), 200

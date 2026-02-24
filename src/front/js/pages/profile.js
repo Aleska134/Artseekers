@@ -6,10 +6,18 @@ import "../../styles/profile.css";
 export const Profile = () => {
     const { store, actions } = useContext(Context);
     const [isEditing, setIsEditing] = useState(false);
+    
+    // NEW STATE: For profile info
     const [editData, setEditData] = useState({
         name: "",
         username: "",
         profile_image: ""
+    });
+
+    // NEW STATE: For security settings
+    const [passwordData, setPasswordData] = useState({
+        oldPassword: "",
+        newPassword: ""
     });
 
     const defaultAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
@@ -37,6 +45,26 @@ export const Profile = () => {
         }
     };
 
+    /**
+     * Security Update Handler
+     * Communicates with the changePassword action and provides feedback.
+     */
+    const handlePasswordChange = async () => {
+        if (!passwordData.oldPassword || !passwordData.newPassword) {
+            alert("Please fill in both password fields.");
+            return;
+        }
+
+        const result = await actions.changePassword(passwordData.oldPassword, passwordData.newPassword);
+        
+        if (result.success) {
+            alert("Password updated successfully!");
+            setPasswordData({ oldPassword: "", newPassword: "" }); // Clear fields
+        } else {
+            alert("Error: " + result.message);
+        }
+    };
+
     const handleDeleteFavorite = (exhibit_museum_id) => {
         actions.deleteFavorite(exhibit_museum_id);
     };
@@ -49,10 +77,8 @@ export const Profile = () => {
                         <div className="col-12 col-xl-10">
                             <div className="profile-card shadow-lg border-0">
                                 
-                                {/* HEADER SECTON: Responsive Flex (Column on mobile, Row on desktop) */}
+                                {/* HEADER SECTION */}
                                 <div className="profile-header-black d-flex flex-column flex-md-row align-items-center align-items-md-end pb-3">
-                                    
-                                    {/* AVATAR GROUP: Anchor image and button together */}
                                     <div className="profile-avatar-wrapper mt-4 mt-md-0 ms-md-4">
                                         <div className="avatar-container shadow">
                                             <img
@@ -74,7 +100,6 @@ export const Profile = () => {
                                         )}
                                     </div>
 
-                                    {/* USER INFO: Centered on mobile, Left-aligned on desktop */}
                                     <div className="ms-md-3 text-center text-md-start mt-3 mt-md-0 mb-md-2 flex-grow-1">
                                         {!isEditing ? (
                                             <>
@@ -107,7 +132,7 @@ export const Profile = () => {
                                     </div>
                                 </div>
 
-                                {/* STATS BAR: Responsive padding */}
+                                {/* STATS BAR */}
                                 <div className="stats-bar p-3 p-md-4 text-black border-bottom">
                                     <div className="d-flex justify-content-center justify-content-md-end text-center">
                                         <div className="px-3 border-end">
@@ -155,6 +180,47 @@ export const Profile = () => {
                                             </div>
                                         )}
                                     </div>
+
+                                    {/* --- NEW SECTION: SECURITY SETTINGS --- */}
+                                    <div className="mt-5 border-top pt-4">
+                                        <h5 className="lead fw-normal mb-3 text-center text-md-start">SECURITY SETTINGS</h5>
+                                        <div className="p-4 rounded" style={{ backgroundColor: "#fcfcfc", border: "1px solid #eee" }}>
+                                            <p className="small text-muted mb-4">Protect your account by updating your credentials.</p>
+                                            
+                                            <div className="row g-3 align-items-end">
+                                                <div className="col-md-4">
+                                                    <label className="form-label small fw-bold">CURRENT PASSWORD</label>
+                                                    <input 
+                                                        type="password" 
+                                                        className="form-control form-control-sm rounded-0" 
+                                                        placeholder="••••••••"
+                                                        value={passwordData.oldPassword}
+                                                        onChange={(e) => setPasswordData({...passwordData, oldPassword: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <label className="form-label small fw-bold">NEW PASSWORD</label>
+                                                    <input 
+                                                        type="password" 
+                                                        className="form-control form-control-sm rounded-0" 
+                                                        placeholder="••••••••"
+                                                        value={passwordData.newPassword}
+                                                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <button 
+                                                        className="btn btn-dark btn-sm w-100 fw-bold rounded-0 py-2"
+                                                        onClick={handlePasswordChange}
+                                                    >
+                                                        UPDATE PASSWORD
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* --- END SECURITY SECTION --- */}
+
                                 </div>
                             </div>
                         </div>

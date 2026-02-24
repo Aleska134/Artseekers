@@ -12,7 +12,7 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState({ type: '', text: '' }); // Improved feedback state
+  const [message, setMessage] = useState({ type: '', text: '' }); 
 
   const navigate = useNavigate();
 

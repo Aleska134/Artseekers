@@ -13,16 +13,18 @@ from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-# 1. Configuración de Base de Datos
+# 1. Database Configuration
 db_url = os.getenv("DATABASE_URL")
 
-# Detectamos si estamos en Codespaces (desarrollo) o en la nube (producción)
+# Detect if we're running in a production environment (like Render or Heroku) by checking if 
+# DATABASE_URL is set and contains "postgresql". If so, we use that. Otherwise, we default to a local SQLite database for development.
 if db_url and "postgresql" in db_url:
     # Si la URL es de Postgres, estamos en producción (Render/Heroku)
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
 else:
-    # Estamos en LOCAL (Codespaces) -> Forzamos la ruta absoluta de 4 barras
-    # Esto ignora el sqlite:/// del .env y usa la ruta que creamos
+    # In local (Codespaces) -> force the use of our SQLite path (ignoring .env if it exists)
+    # Ignoring .env DATABASE_URL in development to ensure we use SQLite locally, which is simpler 
+    # for testing and avoids Postgres setup issues.
     current_dir = os.path.dirname(os.path.realpath(__file__))
     db_path = os.path.join(current_dir, "instance", "test.db")
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -32,17 +34,15 @@ else:
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
-
-# 2. VINCULACIÓN INMEDIATA (Esto arregla el error)
+# 2. Inmediatee DB Initialization (before importing routes)
 db.init_app(app)
 MIGRATE = Migrate(app, db, compare_type=True)
 
-# 3. Resto de configuraciones
+# 3. Confiuration for JWT (JSON Web Tokens) for Authentication
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 
-# 4. Importar rutas DESPUÉS de haber vinculado la DB
+# 4. Import routes after initializing DB to avoid circular imports
 from api.routes import api
 app.register_blueprint(api, url_prefix='/api')
 

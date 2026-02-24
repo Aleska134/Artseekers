@@ -1,81 +1,96 @@
 /* 
     EXHIBITS PAGE STYLES
     Theme: Modern Minimalist Gallery
-    Focus: Responsive layout and technical consistency
 */
 
-/* Main wrapper with a deep neutral background to make artwork colors pop */
+/* 1. LAYOUT & CONTAINERS */
 .exhibits-container {
     background-color: #121212;
     background-image: radial-gradient(#333 0.5px, transparent 0.5px);
-    background-size: 30px 30px; /* Subtle architectural grid pattern */
+    background-size: 30px 30px; 
     min-height: 100vh;
     padding-bottom: 50px;
     color: #f5f5f5;
     font-family: 'Georgia', serif;
 }
 
-/* Flexbox Grid for the Gallery */
 #main {
     padding: 20px;
     gap: 30px;
 }
 
-/* Card Styling: "The Frame" 
-   Using fixed height to ensure grid uniformity
-*/
+/* 2. ART CARD FRAME */
 .art-card {
     background-color: #ffffff;
-    border: 12px solid #000000 !important; /* Thick solid frame look */
+    border: 12px solid #000000 !important;
     border-radius: 0;
-    width: 18rem;
-    height: 480px; /* Locked height for architectural symmetry */
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    overflow: hidden;
+    width: 100%; 
+    max-width: 18rem;
+    height: 420px; 
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .art-card:hover {
-    transform: scale(1.03) translateY(-10px);
+    transform: translateY(-10px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-    border-color: #c5a059 !important; /* Gold highlight on hover */
+    border-color: #c5a059 !important; 
 }
 
-/* Image behavior: Ensuring consistency across different aspect ratios */
+/* 3. ART IMAGE (Museum Matting Effect) */
 .art-image {
-    height: 280px;
+    height: 250px; 
     width: 100%;
-    object-fit: cover;
+    object-fit: contain; 
+    object-position: center;
+    background-color: #f0f0f0; 
+    padding: 10px; 
     border-bottom: 1px solid #eee;
 }
 
-/* Card Content: Implements Flexbox for the "Sticky Footer" pattern 
-   This ensures the heart button is always visible at the bottom.
-*/
+/* 4. CARD CONTENT AREA */
 .card-body {
-    padding: 12px;
+    /* Reduced padding to give more room for text scroll */
+    padding: 12px 15px; 
     background-color: #fff;
     color: #1a1a1a;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Pushes footer to the bottom */
-    flex-grow: 1; /* Occupies all remaining vertical space */
+    justify-content: space-between;
+    flex-grow: 1;
 }
 
-/* Title Truncation: Prevents text from pushing elements out of the frame */
+/* 5. SCROLLABLE TITLE LOGIC */
 .card-title {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: bold;
     margin-bottom: 2px;
     line-height: 1.2;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limits title to 2 lines */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    
+    /*Fixed height container with vertical scroll */
+    height: 3rem; 
+    overflow-y: auto; 
+    overflow-x: hidden;
+    display: block; /* Ensure it's not using webkit-box here */
+    white-space: normal; 
+    
+    /* Custom Minimal Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #c5a059 transparent;
 }
 
+/* Webkit Scrollbar Styling */
+.card-title::-webkit-scrollbar {
+    width: 3px;
+}
+.card-title::-webkit-scrollbar-thumb {
+    background-color: #c5a059;
+    border-radius: 10px;
+}
+
+/* 6. FOOTER & BUTTONS */
 .text-muted.small {
     color: #777 !important;
     text-transform: uppercase;
@@ -83,55 +98,91 @@
     font-size: 0.65rem;
 }
 
-/* Card Footer: Aligns the Artist name and Favorite button */
 .card-footer-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid #f0f0f0;
     padding-top: 8px;
+    gap: 10px; /* Espacio mínimo entre el nombre y el botón */
 }
 
-/* Button & Icon Styling */
 .btn-outline-danger {
     border-radius: 50%;
     padding: 5px 8px;
-    transition: transform 0.2s ease;
     z-index: 10;
 }
 
-.btn-outline-danger:hover {
-    transform: scale(1.2);
-    background-color: transparent !important;
+.fas.fa-heart { color: #dc3545; }
+.far.fa-heart { color: #bbb; }
+
+/* 2. Scrollable Author Container */
+.artist-name-wrapper {
+    font-style: italic;
+    color: #444;
+    font-size: 0.75rem;
+    
+    
+    max-width: 75%; 
+    height: 1.1rem; 
+
+    /* Permitimos scroll horizontal para nombres largos */
+    overflow-x: auto; 
+    overflow-y: hidden;
+    white-space: nowrap; /* Mantiene el nombre en una sola línea */
+    
+    /* Ocultamos la barra de scroll para que se vea limpio (modern UX) */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
 }
 
-.fas.fa-heart { color: #dc3545; } /* Red when favorited */
-.far.fa-heart { color: #bbb; }    /* Grey when empty */
+/* Ocultar barra de scroll en Chrome/Safari/Brave */
+.artist-name-wrapper::-webkit-scrollbar {
+    display: none;
+}
 
-/* Pagination Style */
+/* Efecto visual opcional: Si el usuario pasa el mouse, el nombre se mueve o resalta */
+.artist-name-wrapper:hover {
+    color: var(--accent-gold);
+}
+
+/* 7. RESPONSIVE ADJUSTMENTS */
+@media (max-width: 767px) {
+    .art-card {
+        height: 360px; /* Adjusted to fit the scrollable area */
+        border-width: 8px !important;
+    }
+    .art-image {
+        height: 180px;
+    }
+    .card-body {
+        padding: 7px 10px !important;
+    }
+    .card-title {
+        font-size: 0.8rem;
+        height: 3.5rem; /* Slightly smaller scroll window for mobile */
+        
+        /* CS FIX: Remove any line-clamping that was inherited */
+        display: block !important;
+        -webkit-line-clamp: unset !important; 
+    }
+    .artist-name-wrapper {
+        font-size: 0.7rem;
+        max-width: 70%;
+    }
+}
+
+/* 8. PAGINATION */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
 .pagination .page-link {
     background-color: #000;
     color: #fff;
     border: 1px solid #333;
-}
-
-@media (max-width: 767px) {
-    .art-card {
-        width: 100% !important; 
-        height: 340px !important; /* Shorter cards for 2-column layout */
-        border-width: 5px !important; /* Thinner museum frame for mobile */
-    }
-    .art-image {
-        height: 180px !important; /* Smaller image height */
-    }
-    .card-body {
-        padding: 8px !important;
-    }
-    .card-title {
-        font-size: 0.75rem !important;
-        -webkit-line-clamp: 1; /* Only 1 line for title on mobile */
-    }
-    .card-footer-row {
-        padding-top: 4px !important;
-    }
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
 }

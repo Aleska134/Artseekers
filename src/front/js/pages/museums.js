@@ -6,10 +6,9 @@ import '../../styles/museums.css';
 /**
  * MUSEUMS COMPONENT
  * Showcases partner institutions and upcoming integrations.
- * Demonstrates DRY principle by mapping through a configuration object.
  */
 export const Museums = () => {
-    // CS Concept: Single State Variable for active popup (more memory efficient than multiple booleans)
+    // Single State Variable for active popup (more memory efficient than multiple booleans)
     const [activePopup, setActivePopup] = useState(null);
 
     // Museum Data Structure: Easy to scale and modify

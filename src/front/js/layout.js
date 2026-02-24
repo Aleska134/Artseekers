@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"; // Añadimos useEffect y useContext
+import React, { useState, useEffect, useContext } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
@@ -9,7 +9,7 @@ import { Departments } from "./pages/departments";
 import { Contactus } from "./pages/contact";
 import { Exhibits } from "./pages/exhibits";
 import { Profile } from "./pages/profile";
-import { Context } from "./store/appContext"; // Importamos el contexto
+import { Context } from "./store/appContext"; 
 import injectContext from "./store/appContext";
 import Login from "./component/login"
 import { Department } from "./pages/department";
@@ -20,15 +20,14 @@ import { Footer } from "./component/footer";
 import SignUp from "../js/component/signup";
 
 const Layout = () => {
-    const { actions } = useContext(Context); // Extraemos las acciones de Flux
+    const { actions } = useContext(Context); 
     const basename = process.env.BASENAME || "";
     const [authAttempt, setAuthAttempt] = useState(null);
     const [authStatus, setAuthStatus] = useState('');
 
-    // --- EFECTO DE PERSISTENCIA (HYDRATION) ---
+    // --- PERSISENCY EFFECT (HYDRATION) ---
     useEffect(() => {
-        // Al cargar la app, verificamos si hay un token en el navegador
-        // y lo sincronizamos con nuestro Store global.
+        // verify if there's a token in sessionStorage and if so, update our global store with it
         actions.syncTokenFromSessionStorage();
     }, []);
 
@@ -54,7 +53,6 @@ const Layout = () => {
                         <Route element={<SignUp setAuthStatus={setAuthStatus} />} path="/signup" />
                         <Route element={<Single />} path="exhibits/single/:objectID" />
                         
-                        {/* Mejora: Un "Not Found" más limpio */}
                         <Route element={<div className="text-center mt-5"><h1>404! Page not found</h1></div>} path="*" />
                     </Routes>
                     <Footer /> 

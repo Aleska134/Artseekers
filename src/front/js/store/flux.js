@@ -156,6 +156,32 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("AI Insight Error:", error);
                     return "Connection error with the AI engine.";
                 }
+            },  
+            
+            changePassword: async (oldPassword, newPassword) => {
+                const store = getStore();
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/user/change-password`, {
+                        method: 'PUT',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${store.token}`
+                        },
+                        body: JSON.stringify({ 
+                            old_password: oldPassword, 
+                            new_password: newPassword 
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        return { success: true, message: data.message };
+                    }
+                    return { success: false, message: data.message };
+                } catch (error) {
+                    console.error("Error changing password:", error);
+                    return { success: false, message: "Server error" };
+                }
             },
 
             deleteFavorite: async (exhibit_museum_id) => {

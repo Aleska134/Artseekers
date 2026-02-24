@@ -1,5 +1,5 @@
 import React from "react";
-import "../../styles/home.css"; // Ensure this contains the footer styles or use global styles
+import "../../styles/home.css"; 
 
 /**
  * FOOTER COMPONENT

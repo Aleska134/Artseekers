@@ -25,7 +25,7 @@ export const Contactus = () => {
     const [isSending, setIsSending] = useState(false);
 
     /**
-     * CS LOGIC: Client-side Validation
+     * Client-side Validation
      * Ensures all fields meet minimum requirements before hitting the API.
      */
     const validateForm = () => {
@@ -54,7 +54,7 @@ export const Contactus = () => {
         setStatus({ type: 'info', text: "Sending your message..." });
 
         try {
-            // Integrating EmailJS Service
+            
             const result = await emailjs.sendForm(
                 "service_m002m7i", 
                 "template_rpim9xk", 
@@ -64,12 +64,19 @@ export const Contactus = () => {
 
             if (result.text === "OK") {
                 setStatus({ type: 'success', text: "Message sent! We will contact you soon." });
-                // Reset form on success
                 setFormData({ name: '', email: '', subject: '', message: '' });
             }
         } catch (error) {
-            console.error("EmailJS Error:", error);
-            setStatus({ type: 'danger', text: "Failed to send message. Please try again later." });
+            /**
+             * DEBUGGING: 
+             * Logging the full error object to see if it's a 
+             * 403 (Auth error), 400 (Bad Request), or Network Error.
+             */
+            console.error("Detailed EmailJS Error:", error);
+            setStatus({ 
+                type: 'danger', 
+                text: `Failed to send: ${error.text || "Check browser console"}` 
+            });
         } finally {
             setIsSending(false);
         }

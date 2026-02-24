@@ -86,11 +86,12 @@
 .artwork-favorite-card {
     display: flex;
     flex-direction: column;
-    height: 420px; /* Forces all cards to be identical height */
+    width: 100%;
+    max-width: 350px; /* Un poco más ancha en perfil queda mejor */
+    height: 380px; 
     border: 8px solid #000 !important;
-    border-radius: 0;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     background: #fff;
+    margin: 0 auto;
 }
 
 .artwork-favorite-card:hover {
@@ -99,18 +100,22 @@
 }
 
 .img-container {
-    height: 250px; /* Standardized image area */
+    height: 220px;
     width: 100%;
+    background-color: #f4f4f4; /* Gris neutro de galería */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #eee;
 }
 
 .artwork-img-profile {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
+    /* 'contain' muestra la obra completa, 'cover' la recorta para llenar.
+       Para un perfil de "coleccionista", 'contain' es más elegante. */
+    object-fit: contain; 
+    padding: 10px; /* Aire para que el cuadro respire */
 }
 
 .artwork-favorite-card:hover .artwork-img-profile {
@@ -156,11 +161,11 @@
 /* 5. RESPONSIVE ADJUSTMENTS */
 @media (max-width: 767px) {
     .artwork-favorite-card {
-        height: auto; /* Allow natural height on small screens if needed */
-        max-width: 350px;
-        margin: 0 auto;
+        height: 340px; /* Ajuste para móviles */
     }
-    
+    .img-container {
+        height: 180px;
+    }
     .profile-header-black {
         text-align: center;
     }

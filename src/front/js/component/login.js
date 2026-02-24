@@ -33,7 +33,7 @@ const Login = () => {
 
         if (loginSuccess) {
             setMessage({ type: 'success', text: "Access granted. Entering gallery..." });
-            // CS Concept: Short delay before redirecting to allow user to see success message
+            // Short delay before redirecting to allow user to see success message
             setTimeout(() => navigate('/profile'), 1500); 
         } else {
             setMessage({ type: 'danger', text: "Invalid credentials. Please try again." });

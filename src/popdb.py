@@ -1,10 +1,10 @@
-# # To populate backend python src/popdb.py & to run backend python src/app.py & the frontend npm run start
 # # pipenv shell
+# # To populate backend python src/popdb.py & to run backend python src/app.py & the frontend npm run start
 # # Terminal -> python src/app.py
 
 import os
 import requests
-import time # Importante para los descansos
+import time 
 from app import app
 from api.models import db, Exhibits, Departments
 
@@ -22,7 +22,7 @@ def make_api_request(url, retries=3, delay=5):
             
             if response.status_code == 403:
                 print(f"!!! 403 Forbidden. MET is rate-limiting us. Waiting {delay}s before retry {i+1}...")
-                time.sleep(delay) # Esperamos antes de reintentar
+                time.sleep(delay) # Wait before retrying
                 continue
                 
             print(f"!!! API Error {response.status_code} on: {url}")
@@ -36,6 +36,8 @@ def make_api_request(url, retries=3, delay=5):
 
 def populate():
     with app.app_context():
+        # Optional: Uncomment the next line if you want to start from zero every time
+        # db.drop_all() 
         print("Creating tables if they don't exist...")
         db.create_all() 
         
@@ -68,7 +70,7 @@ def populate():
             objs_res = make_api_request(objs_url)
             
             if objs_res and objs_res.get("objectIDs"):
-                # Bajamos 15 obras por departamento para ir sobre seguro (puedes subirlo a 40 si funciona)
+                # 15 exhibits per department to avoid hitting the rate limit. Adjust as needed.
                 ids_to_fetch = objs_res["objectIDs"][:15]
                 
                 for art_id in ids_to_fetch:
@@ -89,14 +91,14 @@ def populate():
                             ))
                             print(f"   + Added: {art_data['title'][:30]}...")
                     
-                    # --- EL TRUCO CLAVE ---
-                    # Descansamos 0.3 segundos entre obras para no activar el antispam
+                    # --- Key part ---
+                    # 0.3 second rest between artwork requests to avoid hitting the rate limit.
                     time.sleep(0.3)
 
-            # Guardamos los cambios por cada departamento
+            # Save after each department to ensure data is stored and to avoid losing progress if we get rate-limited
             db.session.commit()
             print(f"Finished {dept.name}. Small rest...")
-            time.sleep(2) # Descanso mayor entre departamentos
+            time.sleep(2) # Rest between departments to avoid hitting the rate limit
 
         print("\n--- DATABASE SUCCESSFULLY POPULATED! ---")
 

@@ -38,7 +38,7 @@ export const Single = () => {
         if (!exhibit) return;
 
         setAiLoading(true);
-        // CS Logic: We pass the image URL so the model can perform "Vision Analysis"
+        // We pass the image URL so the model can perform "Vision Analysis"
         const insight = await actions.getAIInsight({
             name: exhibit.exhibit_name,
             artist: exhibit.artist_name,

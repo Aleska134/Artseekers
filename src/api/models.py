@@ -13,37 +13,6 @@ user_to_exhibit = db.Table(
     db.Column("exhibit_id", db.ForeignKey("exhibits.id"), primary_key=True),
 )
 
-
-# class User(db.Model):
-#     __tablename__="user"
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(120), unique=False, nullable=False)
-#     username = db.Column(db.String(120), unique=True, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
-#     password = db.Column(db.String(80), unique=False, nullable=False)
-#     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-#     profile_image = db.Column(db.String(255), unique=False, nullable=True)
-#     favorites = db.relationship(
-#         'Exhibits',
-#         secondary = user_to_exhibit,
-#         uselist = True,
-#         overlaps="favorites"
-        
-#     )
-
-#     def __repr__(self):
-#         return f'<User {self.email}>'
-
-#     def serialize(self):
-#         return {
-#             "id": self.id,
-#             "email": self.email,
-#             "name" : self.name,
-#             "username" : self.username,
-#             "favorites": [exhibit.serialize() for exhibit in self.favorites]
-#             # Note: Password is intentionally omitted for security reasons.
-#         }
-
 class User(db.Model):
     __tablename__="user"
     id = db.Column(db.Integer, primary_key=True)
@@ -52,7 +21,6 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    # NEW COLUMN: Store the URL of the profile picture
     profile_image = db.Column(db.String(255), unique=False, nullable=True) 
 
     favorites = db.relationship('Exhibits', secondary=user_to_exhibit, overlaps="favorites")

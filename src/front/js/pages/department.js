@@ -37,7 +37,7 @@ export const Department = () => {
     );
 
     /**
-     * REACTIVE LOGIC: Check if an item is favorited.
+     * Check if an item is favorited.
      * This looks directly into the global user object for a Single Source of Truth.
      */
     const isFavorited = (museumId) => {
@@ -55,12 +55,6 @@ export const Department = () => {
                     <div className="title-underline mx-auto" style={{width: "60px", height: "3px", backgroundColor: "#c5a059"}}></div>
                 </header>
 
-                {/* 
-                    CS TIP: Using Bootstrap Grid row-cols classes 
-                    - row-cols-2: 2 items per row on mobile
-                    - row-cols-md-3: 3 items per row on tablets
-                    - row-cols-lg-4: 4 items per row on desktops
-                */}
                 <div className="container-fluid px-2 px-md-5">
                     <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-4 justify-content-center">
                         {filteredArtPieces.length === 0 ? (
@@ -87,18 +81,23 @@ export const Department = () => {
                                             </div>
                                             
                                             <div className="card-footer-row">
-                                                <small className="text-italic text-truncate d-none d-md-inline" style={{maxWidth: "70%"}}>
-                                                    {item.artist_name || "Unknown"}
-                                                </small>
-                                                <button
-                                                    className="btn btn-outline-danger border-0 p-1"
-                                                    onClick={() => isFavorited(item.exhibit_museum_id) 
-                                                        ? actions.deleteFavorite(item.exhibit_museum_id) 
-                                                        : actions.addFavorite(item.exhibit_museum_id)}
-                                                >
-                                                    <i className={`${isFavorited(item.exhibit_museum_id) ? "fas" : "far"} fa-heart`}></i>
-                                                </button>
+                                            {/* 
+                                                CS ENCAPSULATION: 
+                                                Wrapping the author in a controlled container to handle overflow 
+                                            */}
+                                            <div className="artist-name-wrapper">
+                                                {item.artist_name || "Unknown Author"}
                                             </div>
+
+                                            <button
+                                                className="btn btn-outline-danger border-0 p-1"
+                                                onClick={() => isFavorited(item.exhibit_museum_id) 
+                                                    ? actions.deleteFavorite(item.exhibit_museum_id) 
+                                                    : actions.addFavorite(item.exhibit_museum_id)}
+                                            >
+                                                <i className={`${isFavorited(item.exhibit_museum_id) ? "fas" : "far"} fa-heart`}></i>
+                                            </button>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>

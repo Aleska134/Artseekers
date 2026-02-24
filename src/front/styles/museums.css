@@ -32,9 +32,9 @@
     overflow: hidden;
     transition: transform 0.3s ease;
     height: 250px;
-    width: 100%; /* Asegura que ocupe el ancho del contenedor */
-    display: block; /* Evita espacios extraños abajo de la imagen */
-    box-sizing: border-box; /* IMPORTANTE: El borde va hacia adentro */
+    width: 100%; 
+    display: block; /* Avoid extra space below the photo */
+    box-sizing: border-box; /* IMPORTANT: inner margin/border is included in total width/height */
 }
 
 .museum-frame:hover {
@@ -83,40 +83,43 @@
 /* THE POPUP MODAL (Compact Version) */
 .museum-popup {
     position: absolute;
-    top: 10px; /* Reducido para ganar espacio arriba */
+    top: 10px; 
     left: 10px;
     right: 10px;
     bottom: 10px;
     background-color: rgba(0, 0, 0, 0.96);
     z-index: 50;
-    padding: 10px; /* Padding mínimo para aprovechar el área */
+    padding: 10px; 
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Agrupa todo en el centro vertical */
+    justify-content: center; 
     align-items: center;
     text-align: center;
     box-sizing: border-box;
+    top: 5px; bottom: 5px; left: 5px; right: 5px; /* Más espacio interno */
+    padding: 10px;
+    overflow-y: auto; /* IMPORTANTE: Si el texto es mucho, permite scroll interno */
 }
 
-/* Título del museo con margen mínimo */
+/* Museum title */
 .popup-title {
     font-size: 1rem;
     color: #c5a059;
     font-weight: bold;
-    margin-bottom: 2px; /* Espacio casi nulo con la ubicación */
+    margin-bottom: 2px; /* Location space (very small) */
     line-height: 1.1;
 }
 
-/* Ubicación (New York, etc) */
+/* Location (New York, etc) */
 .popup-location {
     font-size: 0.7rem;
     color: #888;
-    margin-bottom: 5px; /* Reducido */
+    margin-bottom: 5px;
 }
 
-/* Lista de hechos (Facts) compacta */
+/* Compact list */
 .popup-list {
-    margin: 0; /* Eliminamos márgenes externos */
+    margin: 0; /* Delete margins */
     padding: 0;
     list-style: none;
     width: 100%;
@@ -124,13 +127,13 @@
 
 .popup-list li {
     font-size: 0.75rem;
-    margin-bottom: 2px; /* Espacio mínimo entre líneas */
+    margin-bottom: 2px; /* Min space between list items */
     color: #eee;
-    border-bottom: 1px solid rgba(255,255,255,0.05); /* Línea muy sutil */
+    border-bottom: 1px solid rgba(255,255,255,0.05); /* Small line for separation */
     padding-bottom: 2px;
 }
 
-/* Botón de cerrar con margen superior controlado */
+/* closing button */
 .popup-close-btn {
     border-radius: 0;
     font-size: 0.65rem;
@@ -138,12 +141,29 @@
     padding: 3px 10px;
     background: transparent;
     color: #c5a059;
-    margin-top: 8px; /* Pequeño respiro antes del botón */
+    margin-top: 8px; /* Space reduced for better fit */
 }
 
-/* AJUSTES EXTRA PARA PANTALLAS MUY PEQUEÑAS */
+/* XS Screens*/
 @media (max-width: 380px) {
     .popup-title { font-size: 0.85rem !important; }
     .popup-list li { font-size: 0.65rem !important; }
-    .museum-frame { height: 180px !important; } /* Un poco más bajo en móviles mini */
+    .museum-frame { height: 180px !important; } /* lower for small phones */
+}
+
+@media (max-width: 767px) {
+    .popup-title {
+        font-size: 0.8rem !important;
+        margin-bottom: 2px !important;
+    }
+    .popup-list li {
+        font-size: 0.65rem !important;
+        line-height: 1 !important;
+        margin-bottom: 2px !important;
+    }
+    .popup-close-btn {
+        margin-top: 5px !important;
+        padding: 2px 8px !important;
+        font-size: 0.6rem !important;
+    }
 }
