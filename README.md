@@ -14,7 +14,12 @@
 ## 🌟 Project Overview
 **ArtSeekers** is a professional explorer for the **Metropolitan Museum of Art (The MET)** collection. While it started as a collaborative bootcamp project, I have independently refactored its entire core to meet professional standards, focusing on data optimization, advanced AI integrations, and high-end UI responsiveness.
 
+<<<<<<< HEAD
 ## 🚀 The Engineering Journey (Key Optimizations)
+=======
+<h2>🧠 Engineering Highlights </h2>
+<p>I focused on solving specific architectural and algorithmic challenges to ensure scalability and performance:</p>
+>>>>>>> 687453896f12436d5449eaa489e2df2fed1cb793
 
 As a Computer Science student, I treated this project as a challenge to solve real-world performance and security issues:
 
