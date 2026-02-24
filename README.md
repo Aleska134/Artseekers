@@ -19,7 +19,7 @@
   ArtSeekers is a professional-grade gallery explorer for the <strong>Metropolitan Museum of Art</strong> collection. Originally a group project, I refactored the entire system to meet modern software engineering standards. This version introduces <strong>Computer Vision AI</strong>, an optimized <strong>$O(N+M)$ backend</strong>, and a robust <strong>User Profile Management</strong> system.
 </p>
 
-<h2>🧠 Engineering Highlights (CS Focus)</h2>
+<h2>🧠 Engineering Highlights </h2>
 <p>I focused on solving specific architectural and algorithmic challenges to ensure scalability and performance:</p>
 
 <table>
