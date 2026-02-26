@@ -11,3 +11,5 @@ pip install pipenv
 pipenv install
 
 pipenv run upgrade
+
+pipenv run pop_db

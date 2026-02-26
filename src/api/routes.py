@@ -77,12 +77,15 @@ def get_my_profile():
 @api.route('/exhibits-and-departments', methods=['GET'])
 def get_exhibits_and_departments():  
     try:
-        exhibits = db.session.query(Exhibits).all()
+        # Order exhibits by ID ascending to ensure consistent ordering
+        exhibits = db.session.query(Exhibits).order_by(Exhibits.id.asc()).all()
 
+        # Order departments by ID ascending to ensure consistent ordering in the dropdown
         departments = (
             db.session.query(Departments)
             .join(Exhibits, Exhibits.department_museum_id == Departments.department_museum_id)
             .distinct()
+            .order_by(Departments.id.asc()) 
             .all()
         )
 

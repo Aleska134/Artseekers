@@ -70,8 +70,8 @@ def populate():
             objs_res = make_api_request(objs_url)
             
             if objs_res and objs_res.get("objectIDs"):
-                # 40 exhibits per department to avoid hitting the rate limit. Adjust as needed.
-                ids_to_fetch = objs_res["objectIDs"][:40]
+                # 35 exhibits per department to avoid hitting the rate limit. Adjust as needed.
+                ids_to_fetch = objs_res["objectIDs"][:35]
                 
                 for art_id in ids_to_fetch:
                     art_data = make_api_request(f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{art_id}')
