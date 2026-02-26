@@ -23,7 +23,7 @@ requests = "*"
 PyYAML = ">=6.0.1"
 
 [requires]
-python_version = "3.12"
+python_version = "3.12.2"
 
 [scripts]
 start="flask run -p 3001 -h 0.0.0.0"
