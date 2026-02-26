@@ -37,7 +37,7 @@ def make_api_request(url, retries=3, delay=5):
 def populate():
     with app.app_context():
         # Optional: Uncomment the next line if you want to start from zero every time
-        db.drop_all() 
+        # db.drop_all() # WARNING: This will delete all existing data, use with caution!
         print("Creating tables if they don't exist...")
         db.create_all() 
         
@@ -72,11 +72,11 @@ def populate():
             if objs_res and objs_res.get("objectIDs"):
                 all_ids = objs_res["objectIDs"]
                 added_count = 0
-                max_to_add = 35 # Cuántas queremos por departamento
+                max_to_add = 35 # Limit to 35 artworks per department to keep the database manageable and ensure we get a good variety with images. Adjust as needed.
                 attempts = 0
-                max_attempts = 150 # Para no quedarnos en un bucle infinito si no hay suficientes
+                max_attempts = 150 # max attempts to find 35 valid artworks (with images) to avoid infinite loops in departments with few artworks or muchas sin imagen.
 
-                # En lugar de tomar los primeros 35, iteramos hasta alcanzar la meta
+                # Take artworks in order until we reach the max we want to add or exhaust a reasonable number of attempts
                 while added_count < max_to_add and attempts < len(all_ids) and attempts < max_attempts:
                     art_id = all_ids[attempts]
                     attempts += 1
@@ -99,7 +99,7 @@ def populate():
                             added_count += 1
                             print(f"   + Added ({added_count}/{max_to_add}): {art_data['title'][:30]}...")
                     
-                    time.sleep(0.2) # Un poco más rápido para compensar los intentos extra
+                    time.sleep(0.2) # Sleep to be gentle with the API and avoid rate limits
 
             db.session.commit()
             print(f"Finished {dept.name}. Added {added_count} exhibits.")
