@@ -19,6 +19,8 @@ jwt = JWTManager(app)
 # 1. Database Configuration
 db_url = os.getenv("DATABASE_URL")
 
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key-for-testing")
+
 # Detect if we're running in a production environment (like Render or Heroku) by checking if 
 # DATABASE_URL is set and contains "postgresql". If so, we use that. Otherwise, we default to a local SQLite database for development.
 if db_url and "postgresql" in db_url:
@@ -42,8 +44,8 @@ db.init_app(app)
 MIGRATE = Migrate(app, db, compare_type=True)
 
 # 3. Confiuration for JWT (JSON Web Tokens) for Authentication
-app.config["JWT_SECRET_KEY"] = "super-secret"
-jwt = JWTManager(app)
+# app.config["JWT_SECRET_KEY"] = "super-secret"
+# jwt = JWTManager(app)
 
 # 4. Import routes after initializing DB to avoid circular imports
 from api.routes import api
