@@ -13,6 +13,10 @@ from flask_jwt_extended import JWTManager
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+# static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
+ENV = os.getenv("FLASK_DEBUG") # in render, this is set to "0" for production and "1" for development. In Codespaces, it defaults to "1" (development).
+static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
+
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key-for-testing")  # Use env variable or default for testing
 jwt = JWTManager(app)
 
@@ -60,7 +64,15 @@ def handle_invalid_usage(error):
 
 @app.route('/')
 def sitemap():
-    return generate_sitemap(app)
+    if ENV == "development":
+        return generate_sitemap(app)
+    return send_from_directory(static_file_dir, 'index.html')
+
+@app.route('/<path:path>', methods=['GET'])
+def any_other_view(path):
+    if not os.path.isfile(os.path.join(static_file_dir, path)):
+        path = 'index.html'
+    return send_from_directory(static_file_dir, path)
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
