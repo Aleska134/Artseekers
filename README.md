@@ -221,6 +221,18 @@ Visit `http://localhost:3000`
 
 ---
 
+<hr />
+<h2>👥 Original Team & Credits</h2>
+<p>
+  This project was originally conceived as a final group project at <b>4Geeks Academy</b>. 
+  I would like to acknowledge my teammates <b>Erika Scott</b> and <b>Jose Dominguez</b> 
+  for their contribution to the initial MVP.
+</p>
+<p>
+  <i>Note: This specific version has been independently refactored and enhanced by me to include AI Multimodal integration, 
+  backend optimizations ($O(N+M)$), and production deployment.</i>
+</p>
+
 <div align="center">
   <p><i>Developed and architected by <b>Aleska Braschi</b> | Computer Science @ MDC </i></p>
   
