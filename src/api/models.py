@@ -19,9 +19,9 @@ class User(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     username = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(250), unique=False, nullable=False)
+    password = db.Column(db.String(300), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    profile_image = db.Column(db.String(255), unique=False, nullable=True) 
+    profile_image = db.Column(db.String(290), unique=False, nullable=True) 
 
     favorites = db.relationship('Exhibits', secondary=user_to_exhibit, overlaps="favorites")
 
@@ -36,17 +36,19 @@ class User(db.Model):
         }
 
 
+
 class Exhibits(db.Model):
     __tablename__ = 'exhibits'
     id = db.Column(db.Integer, primary_key=True)
     exhibit_museum_id = db.Column(db.Integer, nullable=False)
-    exhibit_name = db.Column(db.String(250), nullable=False)
+    exhibit_name = db.Column(db.String(500), nullable=False) 
     department_museum_id = db.Column(db.Integer, nullable=True)
-    primary_image_small = db.Column(db.String(250), nullable=False)
-    region = db.Column(db.String(100),nullable=True)
-    culture = db.Column(db.String(100),nullable=True)
-    object_date = db.Column(db.String(100),nullable=True)
-    artist_name =db.Column(db.String(250),nullable=True)
+    primary_image_small = db.Column(db.Text, nullable=False) 
+    region = db.Column(db.String(250), nullable=True)
+    culture = db.Column(db.String(250), nullable=True)
+    object_date = db.Column(db.String(250), nullable=True)
+    artist_name = db.Column(db.String(500), nullable=True) 
+
     favorites = db.relationship(
         'User',
         secondary = user_to_exhibit,

@@ -79,15 +79,16 @@ def populate():
                     if art_data and art_data.get("primaryImageSmall"):
                         exists = Exhibits.query.filter_by(exhibit_museum_id=art_data["objectID"]).first()
                         if not exists:
+                            
                             db.session.add(Exhibits(
                                 exhibit_museum_id=art_data["objectID"],
-                                exhibit_name=art_data["title"][:240],
-                                primary_image_small=art_data["primaryImageSmall"],
-                                artist_name=art_data.get("artistDisplayName", "Unknown")[:240],
+                                exhibit_name=art_data["title"][:490], 
+                                primary_image_small=art_data["primaryImageSmall"], 
+                                artist_name=art_data.get("artistDisplayName", "Unknown")[:490],
                                 department_museum_id=dept.department_museum_id,
-                                region=art_data.get("region", "N/A"),
-                                culture=art_data.get("culture", "N/A"),
-                                object_date=art_data.get("objectDate", "N/A")
+                                region=art_data.get("region", "N/A")[:240],
+                                culture=art_data.get("culture", "N/A")[:240],
+                                object_date=art_data.get("objectDate", "N/A")[:240]
                             ))
                             print(f"   + Added: {art_data['title'][:30]}...")
                     
