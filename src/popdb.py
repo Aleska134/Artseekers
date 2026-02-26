@@ -37,7 +37,7 @@ def make_api_request(url, retries=3, delay=5):
 def populate():
     with app.app_context():
         # Optional: Uncomment the next line if you want to start from zero every time
-        # db.drop_all() 
+        db.drop_all() 
         print("Creating tables if they don't exist...")
         db.create_all() 
         
@@ -104,7 +104,7 @@ def populate():
             db.session.commit()
             print(f"Finished {dept.name}. Added {added_count} exhibits.")
             time.sleep(1)
-            
+
         print("\n--- DATABASE SUCCESSFULLY POPULATED! ---")
 
 if __name__ == "__main__":
