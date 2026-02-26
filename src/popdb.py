@@ -37,7 +37,7 @@ def make_api_request(url, retries=3, delay=5):
 def populate():
     with app.app_context():
         # Optional: Uncomment the next line if you want to start from zero every time
-        # db.drop_all() 
+        db.drop_all() 
         print("Creating tables if they don't exist...")
         db.create_all() 
         
