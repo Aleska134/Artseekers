@@ -19,7 +19,7 @@ class User(db.Model):
     name = db.Column(db.String(120), unique=False, nullable=False)
     username = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
+    password = db.Column(db.String(250), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     profile_image = db.Column(db.String(255), unique=False, nullable=True) 
 
