@@ -219,6 +219,7 @@ def get_ai_explanation():
                             f"complete insight about the artwork '{artwork_name}' in 3 to 4 sentences, "
                             f"focusing on its visual style and historical significance. Ensure your "
                             f"response is fully concluded and does not exceed 500 words."
+                            f"DO NOT include word counts, labels, or any metadata in your response."
                         )
                     },
                     {
