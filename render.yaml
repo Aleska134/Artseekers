@@ -23,3 +23,5 @@ services:
         value: "3.12.2"
       - key: DATABASE_URL
         value: "postgresql://neondb_owner:npg_H2LGskCBTeR4@ep-flat-glade-ae3scxs2-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+      - key: BACKEND_URL
+        value: "https://artseekers-web.onrender.com"
