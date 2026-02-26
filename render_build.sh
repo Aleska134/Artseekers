@@ -12,4 +12,4 @@ pipenv install
 
 pipenv run upgrade
 
-pipenv run pop_db
+# pipenv run pop_db

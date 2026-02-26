@@ -37,7 +37,7 @@ def make_api_request(url, retries=3, delay=5):
 def populate():
     with app.app_context():
         # Optional: Uncomment the next line if you want to start from zero every time
-        db.drop_all() 
+        # db.drop_all() 
         print("Creating tables if they don't exist...")
         db.create_all() 
         
@@ -70,37 +70,41 @@ def populate():
             objs_res = make_api_request(objs_url)
             
             if objs_res and objs_res.get("objectIDs"):
-                # 35 exhibits per department to avoid hitting the rate limit. Adjust as needed.
-                ids_to_fetch = objs_res["objectIDs"][:35]
-                
-                for art_id in ids_to_fetch:
+                all_ids = objs_res["objectIDs"]
+                added_count = 0
+                max_to_add = 35 # Cuántas queremos por departamento
+                attempts = 0
+                max_attempts = 150 # Para no quedarnos en un bucle infinito si no hay suficientes
+
+                # En lugar de tomar los primeros 35, iteramos hasta alcanzar la meta
+                while added_count < max_to_add and attempts < len(all_ids) and attempts < max_attempts:
+                    art_id = all_ids[attempts]
+                    attempts += 1
+                    
                     art_data = make_api_request(f'https://collectionapi.metmuseum.org/public/collection/v1/objects/{art_id}')
                     
                     if art_data and art_data.get("primaryImageSmall"):
                         exists = Exhibits.query.filter_by(exhibit_museum_id=art_data["objectID"]).first()
                         if not exists:
-                            
                             db.session.add(Exhibits(
                                 exhibit_museum_id=art_data["objectID"],
-                                exhibit_name=art_data["title"][:490], 
-                                primary_image_small=art_data["primaryImageSmall"], 
+                                exhibit_name=art_data["title"][:490],
+                                primary_image_small=art_data["primaryImageSmall"],
                                 artist_name=art_data.get("artistDisplayName", "Unknown")[:490],
                                 department_museum_id=dept.department_museum_id,
                                 region=art_data.get("region", "N/A")[:240],
                                 culture=art_data.get("culture", "N/A")[:240],
                                 object_date=art_data.get("objectDate", "N/A")[:240]
                             ))
-                            print(f"   + Added: {art_data['title'][:30]}...")
+                            added_count += 1
+                            print(f"   + Added ({added_count}/{max_to_add}): {art_data['title'][:30]}...")
                     
-                    # --- Key part ---
-                    # 0.3 second rest between artwork requests to avoid hitting the rate limit.
-                    time.sleep(0.3)
+                    time.sleep(0.2) # Un poco más rápido para compensar los intentos extra
 
-            # Save after each department to ensure data is stored and to avoid losing progress if we get rate-limited
             db.session.commit()
-            print(f"Finished {dept.name}. Small rest...")
-            time.sleep(2) # Rest between departments to avoid hitting the rate limit
-
+            print(f"Finished {dept.name}. Added {added_count} exhibits.")
+            time.sleep(1)
+            
         print("\n--- DATABASE SUCCESSFULLY POPULATED! ---")
 
 if __name__ == "__main__":
