@@ -41,13 +41,13 @@ class Exhibits(db.Model):
     __tablename__ = 'exhibits'
     id = db.Column(db.Integer, primary_key=True)
     exhibit_museum_id = db.Column(db.Integer, nullable=False)
-    exhibit_name = db.Column(db.String(500), nullable=False) 
+    exhibit_name = db.Column(db.Text, nullable=False)
     department_museum_id = db.Column(db.Integer, nullable=True)
     primary_image_small = db.Column(db.Text, nullable=False) 
     region = db.Column(db.String(250), nullable=True)
     culture = db.Column(db.String(250), nullable=True)
     object_date = db.Column(db.String(250), nullable=True)
-    artist_name = db.Column(db.String(500), nullable=True) 
+    artist_name = db.Column(db.Text, nullable=True)
 
     favorites = db.relationship(
         'User',

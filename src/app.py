@@ -4,52 +4,43 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
-from api.models import db, User, Exhibits, Departments # Importamos todo junto
+from api.models import db, User, Exhibits, Departments
 from api.utils import APIException, generate_sitemap
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-# static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
-ENV = os.getenv("FLASK_DEBUG") # in render, this is set to "0" for production and "1" for development. In Codespaces, it defaults to "1" (development).
-static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
+# Allow CORS for all domains on all routes
+CORS(app)
 
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key-for-testing")  # Use env variable or default for testing
-jwt = JWTManager(app)
+# Configuration
+ENV = os.getenv("FLASK_DEBUG")
+static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
 
 # 1. Database Configuration
 db_url = os.getenv("DATABASE_URL")
 
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key-for-testing")
-
-# Detect if we're running in a production environment (like Render or Heroku) by checking if 
-# DATABASE_URL is set and contains "postgresql". If so, we use that. Otherwise, we default to a local SQLite database for development.
-if db_url and "postgresql" in db_url:
-    # Si la URL es de Postgres, estamos en producción (Render/Heroku)
+if db_url:
+    # Fix for Render/Heroku/Neon which sometimes uses 'postgres://'
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
 else:
-    # In local (Codespaces) -> force the use of our SQLite path (ignoring .env if it exists)
-    # Ignoring .env DATABASE_URL in development to ensure we use SQLite locally, which is simpler 
-    # for testing and avoids Postgres setup issues.
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    db_path = os.path.join(current_dir, "instance", "test.db")
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:////{db_path}"
-    print(f"--- BACKEND FORCED TO: {app.config['SQLALCHEMY_DATABASE_URI']} ---")
+    # Fallback only if DATABASE_URL is missing
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+print(f"--- DATABASE CONNECTED TO: {app.config['SQLALCHEMY_DATABASE_URI']} ---")
 
-# 2. Inmediatee DB Initialization (before importing routes)
+# 2. JWT Configuration
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key-for-testing")
+jwt = JWTManager(app)
+
+# 3. DB Initialization
 db.init_app(app)
 MIGRATE = Migrate(app, db, compare_type=True)
-
-# 3. Confiuration for JWT (JSON Web Tokens) for Authentication
-# app.config["JWT_SECRET_KEY"] = "super-secret"
-# jwt = JWTManager(app)
 
 # 4. Import routes after initializing DB to avoid circular imports
 from api.routes import api
@@ -58,13 +49,15 @@ app.register_blueprint(api, url_prefix='/api')
 setup_admin(app)
 setup_commands(app)
 
+# Error handling
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
+# Static file serving
 @app.route('/')
 def sitemap():
-    if ENV == "development":
+    if ENV == "1": # In development (Codespaces) show the sitemap
         return generate_sitemap(app)
     return send_from_directory(static_file_dir, 'index.html')
 
