@@ -37,7 +37,7 @@ h1, h2, h3, .navbar-brand {
     font-family: 'Georgia', serif;
     font-weight: bold;
     letter-spacing: 2px;
-    color: #c5a059 !important; /* Nombre en dorado */
+    color: #c5a059 !important; /* Name in gold */
 }
 
 .nav-link {
@@ -50,7 +50,7 @@ h1, h2, h3, .navbar-brand {
 }
 
 .nav-link:hover {
-    color: #c5a059 !important; /* Hover en dorado */
+    color: #c5a059 !important; /* Hover in gold */
 }
 
 .navbar-logo {
@@ -61,12 +61,12 @@ h1, h2, h3, .navbar-brand {
     object-fit: cover;
 }
 
-/* Eliminar el icono viejo de Bootstrap y limpiar el botón */
+/* Clean old bootstrap logo */
 .navbar-toggler {
     padding: 0.25rem 0.5rem;
     focus: none;
     outline: none;
-    box-shadow: none !important; /* Elimina el resplandor azul al hacer clic */
+    box-shadow: none !important; 
 }
 
 .navbar-toggler:focus {
@@ -74,12 +74,12 @@ h1, h2, h3, .navbar-brand {
     box-shadow: none;
 }
 
-/* Opcional: Si quieres un borde dorado sutil en lugar de nada */
+/* gold color for buttons */
 .navbar-toggler {
     border: 1px solid rgba(197, 160, 89, 0.4) !important;
 }
 
-/* Animación simple para que el usuario sepa que es clickeable */
+/* Simple animation for clickable button */
 .navbar-toggler:active {
     transform: scale(0.95);
 }
