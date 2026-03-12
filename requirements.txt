@@ -1,0 +1,15 @@
+flask
+sqlalchemy==1.4.46
+flask-sqlalchemy
+flask-migrate
+flask-swagger
+psycopg2-binary
+python-dotenv
+flask-cors
+gunicorn
+cloudinary
+flask-admin
+typing-extensions
+flask-jwt-extended
+requests
+PyYAML>=6.0.1
