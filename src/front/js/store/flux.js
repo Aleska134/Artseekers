@@ -150,9 +150,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                         return data.insight;
                     } else if (response.status === 503) {
                         return "The AI Historian is currently waking up. Please try again in 10 seconds.";
-                    } else if (response.status === 402) {
-                        // HF Router ran out of included monthly inference credits.
-                        return "The AI curator has reached its monthly analysis quota. Please check back next month or try again later.";
+                    } else if (response.status === 429) {
+                        // Gemini free-tier rate/quota limit hit.
+                        return "The AI curator has reached its analysis quota for now. Please try again in a little while.";
                     }
                     return "The curator is currently unavailable. Please try again later.";
                 } catch (error) {
