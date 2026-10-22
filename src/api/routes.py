@@ -219,6 +219,22 @@ def get_ai_explanation():
     body = request.get_json()
     artwork_name = body.get("name")
     image_url = body.get("image_url") # <--- Get image URL from request body
+    exhibit_museum_id = body.get("exhibit_museum_id") # used to cache the result
+
+    # --- CACHE LOOKUP ---------------------------------------------------------
+    # If we already generated an insight for this artwork, return it straight from
+    # Neon instead of spending another (paid) inference call. This is the single
+    # biggest lever for making the free HF credits last: the same artwork is
+    # analyzed once, then served from the DB on every subsequent view.
+    exhibit = None
+    if exhibit_museum_id is not None:
+        exhibit = Exhibits.query.filter_by(exhibit_museum_id=exhibit_museum_id).first()
+    elif artwork_name:
+        exhibit = Exhibits.query.filter_by(exhibit_name=artwork_name).first()
+
+    if exhibit and exhibit.ai_insight:
+        print("--- Served AI insight from cache ---")
+        return jsonify({"insight": exhibit.ai_insight, "cached": True}), 200
 
     # Optional metadata already present in the DB (all MET pieces here have images).
     # We fold whatever is available into the prompt to give the curator real context
@@ -274,8 +290,9 @@ def get_ai_explanation():
                             f"{facts_line}"
                             f"Weave the relevant catalog details into a natural narrative that "
                             f"focuses on its visual style and historical significance. "
-                            f"Write exactly 3 to 4 complete sentences. Keep it concise and always "
-                            f"finish your final sentence — never stop mid-sentence or mid-word. "
+                            f"Write exactly 2 to 3 complete sentences — brief but substantial, "
+                            f"never a single trivial line. Keep it concise and always finish your "
+                            f"final sentence — never stop mid-sentence or mid-word. "
                             f"DO NOT include word counts, labels, headings, or any metadata in "
                             f"your response."
                         )
@@ -287,11 +304,11 @@ def get_ai_explanation():
                 ]
             }
         ],
-        # 3-4 sentences fit comfortably under ~250 tokens; 400 gives enough
-        # headroom for the model to always close its final sentence instead of
-        # being truncated mid-phrase (the old 500-token cap vs. "500 words"
-        # prompt was contradictory and caused mid-sentence cut-offs).
-        "max_tokens": 400
+        # 2-3 substantial sentences fit comfortably under ~200 tokens. This keeps
+        # the insight brief-but-valuable while cutting inference cost (fewer output
+        # tokens = less credit burn). Still enough headroom to always close the
+        # final sentence instead of truncating mid-phrase.
+        "max_tokens": 200
     }
 
     try:
@@ -300,7 +317,15 @@ def get_ai_explanation():
         if response.status_code == 200:
             result = response.json()
             ai_text = result['choices'][0]['message']['content'].strip()
-            return jsonify({"insight": ai_text}), 200
+
+            # --- CACHE WRITE --------------------------------------------------
+            # Persist the freshly generated insight so future requests for this
+            # artwork are served from the DB (no more inference cost).
+            if exhibit and ai_text:
+                exhibit.ai_insight = ai_text
+                db.session.commit()
+
+            return jsonify({"insight": ai_text, "cached": False}), 200
         else:
             # Log the full router response so provider/model routing issues are
             # diagnosable from the Heroku logs (`heroku logs --tail`).
