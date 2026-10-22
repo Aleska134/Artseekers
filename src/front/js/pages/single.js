@@ -111,7 +111,7 @@ export const Single = () => {
 
                             {/* AI MULTIMODAL SECTION */}
                             <div className="ai-section mt-5 p-3 rounded" style={{ backgroundColor: "rgba(197, 160, 89, 0.1)", border: "1px solid #c5a059" }}>
-                                <h6 className="text-warning mb-2"><i className="fas fa-robot me-2"></i> AI VIRTUAL CURATOR (Qwen-Vision)</h6>
+                                <h6 className="text-warning mb-2"><i className="fas fa-robot me-2"></i> AI VIRTUAL CURATOR (Gemini Vision)</h6>
                                 {!aiInsight ? (
                                     <button 
                                         className="btn btn-sm btn-warning w-100 fw-bold" 

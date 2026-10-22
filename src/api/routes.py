@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+import base64
 import requests
 from flask import Flask, request, jsonify, Blueprint
 from sqlalchemy import text
@@ -210,9 +211,9 @@ def update_user_profile():
 @api.route('/ai/explain', methods=['POST'])
 @jwt_required()
 def get_ai_explanation():
-    print("--- Multimodal AI Request Received (Qwen-VL) ---")
-    
-    api_key = os.getenv("HUGGINGFACE_API_KEY")
+    print("--- Multimodal AI Request Received (Gemini Vision) ---")
+
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         return jsonify({"error": "API Key missing"}), 500
 
@@ -223,9 +224,9 @@ def get_ai_explanation():
 
     # --- CACHE LOOKUP ---------------------------------------------------------
     # If we already generated an insight for this artwork, return it straight from
-    # Neon instead of spending another (paid) inference call. This is the single
-    # biggest lever for making the free HF credits last: the same artwork is
-    # analyzed once, then served from the DB on every subsequent view.
+    # Neon instead of spending another inference call. This is the single biggest
+    # lever for making the free Gemini quota last: each artwork is analyzed once,
+    # then served from the DB on every subsequent view.
     exhibit = None
     if exhibit_museum_id is not None:
         exhibit = Exhibits.query.filter_by(exhibit_museum_id=exhibit_museum_id).first()
@@ -260,76 +261,93 @@ def get_ai_explanation():
         if known_facts else ""
     )
 
-    # Hugging Face Router endpoint (OpenAI Compatible)
-    API_URL = "https://router.huggingface.co/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    
-    # Payload for Vision-Language model (Qwen-VL) with multimodal input (text + image)
-    # NOTE 1: We intentionally DO NOT pin a provider suffix (e.g. ":novita").
-    #   Leaving the model un-pinned lets the HF Router auto-route to whichever
-    #   provider is currently live (deepinfra, novita, featherless-ai, ...).
-    # NOTE 2: We use the 30B variant instead of the 235B. The 235B model is ~8x
-    #   larger and burns through HF's included monthly inference credits in a
-    #   handful of calls, causing HTTP 402 "Payment Required". The 30B model does
-    #   genuine visual analysis at a fraction of the cost (cheaper per token and
-    #   far cheaper to run), so the free tier lasts much longer.
-    payload = {
-        "model": "Qwen/Qwen3-VL-30B-A3B-Instruct",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text", 
-                        "text": (
-                            f"You are a professional MET museum curator. Looking at the image, "
-                            f"provide a sophisticated insight about the artwork '{artwork_name}'. "
-                            f"{facts_line}"
-                            f"Weave the relevant catalog details into a natural narrative that "
-                            f"focuses on its visual style and historical significance. "
-                            f"Write exactly 2 to 3 complete sentences — brief but substantial, "
-                            f"never a single trivial line. Keep it concise and always finish your "
-                            f"final sentence — never stop mid-sentence or mid-word. "
-                            f"DO NOT include word counts, labels, headings, or any metadata in "
-                            f"your response."
-                        )
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": { "url": image_url } # <--- Include image URL in the payload for multimodal analysis
-                    }
-                ]
-            }
-        ],
-        # 2-3 substantial sentences fit comfortably under ~200 tokens. This keeps
-        # the insight brief-but-valuable while cutting inference cost (fewer output
-        # tokens = less credit burn). Still enough headroom to always close the
-        # final sentence instead of truncating mid-phrase.
-        "max_tokens": 200
-    }
+    # The curator prompt (text part of the multimodal request).
+    prompt_text = (
+        f"You are a professional MET museum curator. Looking at the image, "
+        f"provide a sophisticated insight about the artwork '{artwork_name}'. "
+        f"{facts_line}"
+        f"Weave the relevant catalog details into a natural narrative that "
+        f"focuses on its visual style and historical significance. "
+        f"Write exactly 2 to 3 complete sentences — brief but substantial, "
+        f"never a single trivial line. Keep it concise and always finish your "
+        f"final sentence — never stop mid-sentence or mid-word. "
+        f"DO NOT include word counts, labels, headings, or any metadata in "
+        f"your response."
+    )
 
     try:
+        # --- Fetch the artwork image and inline it as base64 ------------------
+        # Gemini's developer API does not accept remote image URLs directly; it
+        # expects inline image bytes. So we download the MET image and base64
+        # encode it as the image part of the multimodal request.
+        img_resp = requests.get(image_url, timeout=15)
+        if img_resp.status_code != 200:
+            print(f"IMAGE FETCH ERROR {img_resp.status_code} for {image_url}")
+            return jsonify({"error": "Could not load the artwork image"}), 502
+        image_b64 = base64.b64encode(img_resp.content).decode("utf-8")
+        mime_type = img_resp.headers.get("Content-Type", "image/jpeg").split(";")[0]
+
+        # --- Gemini generateContent (vision) ---------------------------------
+        # gemini-2.5-flash-lite: the free tier's most generous model (~1,000
+        # requests/day). It performs genuine visual analysis of the image part.
+        model = "gemini-2.5-flash-lite"
+        API_URL = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{model}:generateContent"
+        )
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key,
+        }
+        payload = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [
+                        {"text": prompt_text},
+                        {
+                            "inline_data": {
+                                "mime_type": mime_type,
+                                "data": image_b64,
+                            }
+                        },
+                    ],
+                }
+            ],
+            "generationConfig": {
+                # 2-3 substantial sentences fit comfortably under ~256 tokens.
+                "maxOutputTokens": 256,
+                "temperature": 0.7,
+            },
+        }
+
         response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
-        
+
         if response.status_code == 200:
             result = response.json()
-            ai_text = result['choices'][0]['message']['content'].strip()
+            # Defensive parse: Gemini can return no candidates (e.g. safety block).
+            candidates = result.get("candidates", [])
+            if not candidates:
+                print(f"GEMINI: no candidates returned: {result}")
+                return jsonify({"error": "The curator could not interpret this piece"}), 502
+            parts = candidates[0].get("content", {}).get("parts", [])
+            ai_text = "".join(p.get("text", "") for p in parts).strip()
+            if not ai_text:
+                print(f"GEMINI: empty text in response: {result}")
+                return jsonify({"error": "The curator could not interpret this piece"}), 502
 
             # --- CACHE WRITE --------------------------------------------------
             # Persist the freshly generated insight so future requests for this
             # artwork are served from the DB (no more inference cost).
-            if exhibit and ai_text:
+            if exhibit:
                 exhibit.ai_insight = ai_text
                 db.session.commit()
 
             return jsonify({"insight": ai_text, "cached": False}), 200
         else:
-            # Log the full router response so provider/model routing issues are
+            # Log the full response so quota / auth / model issues are
             # diagnosable from the Heroku logs (`heroku logs --tail`).
-            print(f"HF Router Error {response.status_code}: {response.text}")
+            print(f"Gemini Error {response.status_code}: {response.text}")
             return jsonify({"error": "AI curator is busy observing the gallery"}), response.status_code
 
     except Exception as e:
