@@ -4,6 +4,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 import os
 import requests
 from flask import Flask, request, jsonify, Blueprint
+from sqlalchemy import text
 from api.models import db, User, Exhibits, Departments
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -15,6 +16,24 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+
+@api.route('/health', methods=['GET'])
+def health_check():
+    """Lightweight liveness probe for uptime monitors (e.g. UptimeRobot).
+
+    Unlike hitting '/', this actually exercises the DB with a trivial
+    'SELECT 1'. That way the monitor validates backend + Neon connectivity,
+    not just that the static frontend is being served. Pinging this endpoint
+    periodically also helps keep Neon's autosuspending compute awake.
+    """
+    try:
+        db.session.execute(text("SELECT 1"))
+        return jsonify({"status": "ok", "database": "connected"}), 200
+    except Exception as e:
+        print(f"HEALTHCHECK DB ERROR: {str(e)}")
+        return jsonify({"status": "degraded", "database": "unreachable"}), 503
+
 
 @api.route('/login', methods=['POST'])
 def sign_in():

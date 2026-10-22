@@ -31,7 +31,10 @@
 **Core capabilities**
 - Browse/search artworks from The Met API
 - User authentication + favorites (stored in **Neon Postgres**)
-- AI-powered artwork interpretation (multimodal vision via Hugging Face)
+- **Genuine visual AI analysis** — the app sends the *actual artwork image* to a
+  vision-language model (Qwen3-VL, an image-to-text model), which **looks at the
+  piece** and returns a curator-style interpretation. It is not a text-only prompt
+  guessing from a title: the model performs real visual analysis of the image.
 ---
  
 ## 🧩 System Design
@@ -61,15 +64,17 @@ All API calls are same-origin under `www.artseekers.dev` and routed internally v
  
 | Route Pattern | Method(s) | Purpose | Integration |
 |---|---:|---|---|
-| `/api/auth/register` | `POST` | Create account | writes user record to **Neon Postgres** |
-| `/api/auth/login` | `POST` | Authenticate | reads from **Neon Postgres** |
-| `/api/auth/logout` | `POST` | End session | server-side session/token handling |
-| `/api/me` | `GET` | Current user | reads from **Neon Postgres** |
-| `/api/artworks` | `GET` | Browse/search artworks | fetches from **The Met API** |
-| `/api/artworks/:id` | `GET` | Artwork details | fetches from **The Met API** |
-| `/api/favorites` | `GET/POST` | List/add favorites | reads/writes **Neon Postgres** |
-| `/api/favorites/:id` | `DELETE` | Remove favorite | deletes from **Neon Postgres** |
-| `/api/ai/analyze` | `POST` | Artwork AI analysis | calls **Hugging Face inference** |
+| `/api/health` | `GET` | Liveness probe (`SELECT 1`) | pings **Neon Postgres** |
+| `/api/sign-up` | `POST` | Create account | writes user record to **Neon Postgres** |
+| `/api/login` | `POST` | Authenticate (JWT) | reads from **Neon Postgres** |
+| `/api/user/profile` | `GET` | Current user profile | reads from **Neon Postgres** |
+| `/api/user/update` | `PUT` | Update profile | writes to **Neon Postgres** |
+| `/api/user/change-password` | `PUT` | Change password | writes to **Neon Postgres** |
+| `/api/exhibits-and-departments` | `GET` | Browse artworks + departments | reads from **Neon Postgres** (seeded from **The Met API**) |
+| `/api/single/<exhibit_id>` | `GET` | Artwork details | reads from **Neon Postgres** |
+| `/api/addFavorite/<exhibit_museum_id>` | `POST` | Add favorite | writes to **Neon Postgres** |
+| `/api/deleteFavorite/<exhibit_museum_id>` | `DELETE` | Remove favorite | deletes from **Neon Postgres** |
+| `/api/ai/explain` | `POST` | **Visual** artwork AI analysis | sends image to **Qwen3-VL** via Hugging Face Router |
 </details>
 ---
  
@@ -123,8 +128,18 @@ for artwork in artworks:
 ```
 </details>
 <details>
-<summary><strong>2) Multimodal AI Integration (Vision)</strong></summary>
-Uses the artwork image + prompt → calls Hugging Face Inference API (Qwen-VL) → returns a curatorial-style explanation. Designed to fail gracefully on slow/failed inference.
+<summary><strong>2) Multimodal AI Integration (true Vision analysis)</strong></summary>
+
+The AI curator (`POST /api/ai/explain`) is a **real multimodal pipeline**, not a text-only wrapper:
+
+1. The frontend sends the artwork's **image URL** plus catalog metadata (artist, culture, date, region).
+2. The backend builds an **image + text payload** and calls the **Qwen3-VL** image-to-text model via the Hugging Face Router (OpenAI-compatible endpoint).
+3. **The model visually inspects the image** and writes a concise, curator-style interpretation grounded in what it actually sees — composition, style, materials — enriched with the catalog facts.
+
+Engineering notes:
+- Provider is **left un-pinned** so the HF Router auto-routes to any live provider (avoids breakage when a single provider drops the model).
+- `max_tokens` is tuned so responses always finish their final sentence instead of truncating mid-phrase.
+- Fails gracefully on slow/unavailable inference.
 </details>
 <details>
 <summary><strong>3) ETL / Seeding Pipeline</strong></summary>
@@ -147,17 +162,18 @@ Scrypt password hashing + environment-driven configuration (`BACKEND_URL`, `DATA
 git clone https://github.com/Aleska134/Artseekers.git
 cd Artseekers
  
-pipenv install
-pipenv shell
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+pip install -r requirements.txt
  
 cp .env.example .env
-# Set BACKEND_URL, DATABASE_URL, JWT_SECRET, HUGGINGFACE_API_KEY, etc.
+# Set BACKEND_URL, DATABASE_URL, JWT_SECRET_KEY, HUGGINGFACE_API_KEY, etc.
  
-python src/popdb.py   # optional seeding
-python src/app.py
+python src/popdb.py   # optional seeding from The Met API
+python src/app.py     # start the Flask app (serves API + frontend)
  
 npm install
-npm run build         # compile frontend assets
+npm run build         # compile frontend assets into /public
 ```
  
 ---
