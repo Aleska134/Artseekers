@@ -252,12 +252,16 @@ def get_ai_explanation():
     }
     
     # Payload for Vision-Language model (Qwen-VL) with multimodal input (text + image)
-    # NOTE: We intentionally DO NOT pin a provider suffix (e.g. ":novita").
-    # Novita stopped serving the 235B vision model via the HF Router, which broke
-    # the previous ":novita" pin. Leaving the model un-pinned lets the HF Router
-    # auto-route to whichever provider is currently live (deepinfra, etc.).
+    # NOTE 1: We intentionally DO NOT pin a provider suffix (e.g. ":novita").
+    #   Leaving the model un-pinned lets the HF Router auto-route to whichever
+    #   provider is currently live (deepinfra, novita, featherless-ai, ...).
+    # NOTE 2: We use the 30B variant instead of the 235B. The 235B model is ~8x
+    #   larger and burns through HF's included monthly inference credits in a
+    #   handful of calls, causing HTTP 402 "Payment Required". The 30B model does
+    #   genuine visual analysis at a fraction of the cost (cheaper per token and
+    #   far cheaper to run), so the free tier lasts much longer.
     payload = {
-        "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
+        "model": "Qwen/Qwen3-VL-30B-A3B-Instruct",
         "messages": [
             {
                 "role": "user",
