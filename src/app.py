@@ -26,12 +26,31 @@ db_url = os.getenv("DATABASE_URL")
 
 if db_url:
     # Fix for Render/Heroku/Neon which sometimes uses 'postgres://'
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
+    db_url = db_url.replace("postgres://", "postgresql://")
+    # Neon requires SSL. If the connection string doesn't already specify an
+    # sslmode, enforce it so the driver negotiates SSL correctly.
+    if db_url.startswith("postgresql://") and "sslmode=" not in db_url:
+        db_url += ("&" if "?" in db_url else "?") + "sslmode=require"
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 else:
     # Fallback only if DATABASE_URL is missing
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Connection pool hardening for serverless Postgres (Neon).
+# Neon autosuspends the compute endpoint after inactivity (scale-to-zero).
+# When that happens, pooled connections held by gunicorn go stale and the next
+# query fails with "SSL connection has been closed unexpectedly" (HTTP 500).
+#   - pool_pre_ping: test each connection with a lightweight ping before use and
+#     transparently replace it if the server has dropped it (fixes the 500s).
+#   - pool_recycle: proactively recycle connections older than 5 min so we never
+#     hand out a connection Neon has already timed out.
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+}
+
 print(f"--- DATABASE CONNECTED TO: {app.config['SQLALCHEMY_DATABASE_URI']} ---")
 
 # 2. JWT Configuration

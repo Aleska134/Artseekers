@@ -4,6 +4,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 import os
 import requests
 from flask import Flask, request, jsonify, Blueprint
+from sqlalchemy import text
 from api.models import db, User, Exhibits, Departments
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -15,6 +16,24 @@ api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+
+@api.route('/health', methods=['GET'])
+def health_check():
+    """Lightweight liveness probe for uptime monitors (e.g. UptimeRobot).
+
+    Unlike hitting '/', this actually exercises the DB with a trivial
+    'SELECT 1'. That way the monitor validates backend + Neon connectivity,
+    not just that the static frontend is being served. Pinging this endpoint
+    periodically also helps keep Neon's autosuspending compute awake.
+    """
+    try:
+        db.session.execute(text("SELECT 1"))
+        return jsonify({"status": "ok", "database": "connected"}), 200
+    except Exception as e:
+        print(f"HEALTHCHECK DB ERROR: {str(e)}")
+        return jsonify({"status": "degraded", "database": "unreachable"}), 503
+
 
 @api.route('/login', methods=['POST'])
 def sign_in():
@@ -201,6 +220,30 @@ def get_ai_explanation():
     artwork_name = body.get("name")
     image_url = body.get("image_url") # <--- Get image URL from request body
 
+    # Optional metadata already present in the DB (all MET pieces here have images).
+    # We fold whatever is available into the prompt to give the curator real context
+    # instead of relying only on the artwork title + the image.
+    artist = body.get("artist")
+    culture = body.get("culture")
+    object_date = body.get("object_date")
+    region = body.get("region")
+
+    # Build a compact "known facts" line from the fields that are actually present,
+    # so we never feed the model empty/None values.
+    known_facts = []
+    if artist:
+        known_facts.append(f"Artist: {artist}")
+    if culture:
+        known_facts.append(f"Culture: {culture}")
+    if object_date:
+        known_facts.append(f"Date: {object_date}")
+    if region:
+        known_facts.append(f"Region: {region}")
+    facts_line = (
+        f"Known catalog details — {'; '.join(known_facts)}. "
+        if known_facts else ""
+    )
+
     # Hugging Face Router endpoint (OpenAI Compatible)
     API_URL = "https://router.huggingface.co/v1/chat/completions"
     headers = {
@@ -209,8 +252,12 @@ def get_ai_explanation():
     }
     
     # Payload for Vision-Language model (Qwen-VL) with multimodal input (text + image)
+    # NOTE: We intentionally DO NOT pin a provider suffix (e.g. ":novita").
+    # Novita stopped serving the 235B vision model via the HF Router, which broke
+    # the previous ":novita" pin. Leaving the model un-pinned lets the HF Router
+    # auto-route to whichever provider is currently live (deepinfra, etc.).
     payload = {
-        "model": "Qwen/Qwen3-VL-235B-A22B-Instruct:novita",
+        "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
         "messages": [
             {
                 "role": "user",
@@ -218,11 +265,15 @@ def get_ai_explanation():
                     {
                         "type": "text", 
                         "text": (
-                            f"You are a professional MET museum curator. Provide a sophisticated and "
-                            f"complete insight about the artwork '{artwork_name}' in 3 to 4 sentences, "
-                            f"focusing on its visual style and historical significance. Ensure your "
-                            f"response is fully concluded and does not exceed 500 words."
-                            f"DO NOT include word counts, labels, or any metadata in your response."
+                            f"You are a professional MET museum curator. Looking at the image, "
+                            f"provide a sophisticated insight about the artwork '{artwork_name}'. "
+                            f"{facts_line}"
+                            f"Weave the relevant catalog details into a natural narrative that "
+                            f"focuses on its visual style and historical significance. "
+                            f"Write exactly 3 to 4 complete sentences. Keep it concise and always "
+                            f"finish your final sentence — never stop mid-sentence or mid-word. "
+                            f"DO NOT include word counts, labels, headings, or any metadata in "
+                            f"your response."
                         )
                     },
                     {
@@ -232,7 +283,11 @@ def get_ai_explanation():
                 ]
             }
         ],
-        "max_tokens": 500
+        # 3-4 sentences fit comfortably under ~250 tokens; 400 gives enough
+        # headroom for the model to always close its final sentence instead of
+        # being truncated mid-phrase (the old 500-token cap vs. "500 words"
+        # prompt was contradictory and caused mid-sentence cut-offs).
+        "max_tokens": 400
     }
 
     try:
@@ -243,6 +298,8 @@ def get_ai_explanation():
             ai_text = result['choices'][0]['message']['content'].strip()
             return jsonify({"insight": ai_text}), 200
         else:
+            # Log the full router response so provider/model routing issues are
+            # diagnosable from the Heroku logs (`heroku logs --tail`).
             print(f"HF Router Error {response.status_code}: {response.text}")
             return jsonify({"error": "AI curator is busy observing the gallery"}), response.status_code
 
