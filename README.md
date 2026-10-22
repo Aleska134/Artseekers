@@ -32,9 +32,9 @@
 - Browse/search artworks from The Met API
 - User authentication + favorites (stored in **Neon Postgres**)
 - **Genuine visual AI analysis** — the app sends the *actual artwork image* to a
-  vision-language model (Qwen3-VL, an image-to-text model), which **looks at the
-  piece** and returns a curator-style interpretation. It is not a text-only prompt
-  guessing from a title: the model performs real visual analysis of the image.
+  vision-language model (Google **Gemini**, an image-to-text model), which **looks
+  at the piece** and returns a curator-style interpretation. It is not a text-only
+  prompt guessing from a title: the model performs real visual analysis of the image.
 ---
  
 ## 🧩 System Design
@@ -53,7 +53,7 @@ flowchart TB
  
   API -->|SQLAlchemy| DB[(Neon PostgreSQL)]
   API -->|Fetch artwork data| MET[The Met Museum API]
-  API -->|Optional AI inference| HF[Hugging Face Inference - Qwen-VL]
+  API -->|AI vision inference| GEMINI[Google Gemini - Vision]
 ```
  
 ---
@@ -74,7 +74,7 @@ All API calls are same-origin under `www.artseekers.dev` and routed internally v
 | `/api/single/<exhibit_id>` | `GET` | Artwork details | reads from **Neon Postgres** |
 | `/api/addFavorite/<exhibit_museum_id>` | `POST` | Add favorite | writes to **Neon Postgres** |
 | `/api/deleteFavorite/<exhibit_museum_id>` | `DELETE` | Remove favorite | deletes from **Neon Postgres** |
-| `/api/ai/explain` | `POST` | **Visual** artwork AI analysis | sends image to **Qwen3-VL** via Hugging Face Router |
+| `/api/ai/explain` | `POST` | **Visual** artwork AI analysis | sends image to **Google Gemini** (vision) |
 </details>
 ---
  
@@ -82,7 +82,7 @@ All API calls are same-origin under `www.artseekers.dev` and routed internally v
 - **Frontend:** React, Bootstrap 5, Context API, Webpack
 - **Backend:** Python + Flask, Gunicorn, WSGI, SQLAlchemy
 - **DB:** Neon PostgreSQL
-- **External:** The Met Museum API, Hugging Face (Qwen-VL), EmailJS
+- **External:** The Met Museum API, Google Gemini (vision), EmailJS
 - **Hosting & DNS:** Heroku, Name.com Custom Domain
 ---
  
@@ -133,13 +133,13 @@ for artwork in artworks:
 The AI curator (`POST /api/ai/explain`) is a **real multimodal pipeline**, not a text-only wrapper:
 
 1. The frontend sends the artwork's **image URL** plus catalog metadata (artist, culture, date, region).
-2. The backend builds an **image + text payload** and calls the **Qwen3-VL** image-to-text model via the Hugging Face Router (OpenAI-compatible endpoint).
+2. The backend downloads the image, base64-encodes it, and calls **Google Gemini** (`gemini-3.5-flash-lite`) via the `generateContent` endpoint as an inline image + text payload.
 3. **The model visually inspects the image** and writes a concise, curator-style interpretation grounded in what it actually sees — composition, style, materials — enriched with the catalog facts.
 
 Engineering notes:
-- Provider is **left un-pinned** so the HF Router auto-routes to any live provider (avoids breakage when a single provider drops the model).
-- `max_tokens` is tuned so responses always finish their final sentence instead of truncating mid-phrase.
-- Fails gracefully on slow/unavailable inference.
+- **Insight caching** in Neon: each artwork is analyzed once, then served from the DB on subsequent views — keeps the free-tier quota lasting and makes repeat loads instant.
+- `maxOutputTokens` is tuned so responses stay concise (2-3 sentences) and always finish their final sentence instead of truncating mid-phrase.
+- Fails gracefully on slow/unavailable inference and on free-tier quota limits.
 </details>
 <details>
 <summary><strong>3) ETL / Seeding Pipeline</strong></summary>
@@ -156,7 +156,7 @@ Scrypt password hashing + environment-driven configuration (`BACKEND_URL`, `DATA
 - Python 3.10+
 - Node.js + npm
 - PostgreSQL database
-- Hugging Face API key (for AI features)
+- Google Gemini API key (for AI features) — free at https://aistudio.google.com/apikey
 ### Local setup
 ```bash
 git clone https://github.com/Aleska134/Artseekers.git
@@ -167,7 +167,7 @@ source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
  
 cp .env.example .env
-# Set BACKEND_URL, DATABASE_URL, JWT_SECRET_KEY, HUGGINGFACE_API_KEY, etc.
+# Set BACKEND_URL, DATABASE_URL, JWT_SECRET_KEY, GEMINI_API_KEY, etc.
  
 python src/popdb.py   # optional seeding from The Met API
 python src/app.py     # start the Flask app (serves API + frontend)
