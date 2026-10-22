@@ -43,6 +43,8 @@ export const Single = () => {
             name: exhibit.exhibit_name,
             artist: exhibit.artist_name,
             culture: exhibit.culture,
+            object_date: exhibit.object_date,
+            region: exhibit.region,
             image_url: exhibit.primary_image_small 
         });
         setAiInsight(insight);

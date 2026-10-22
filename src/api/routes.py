@@ -201,6 +201,30 @@ def get_ai_explanation():
     artwork_name = body.get("name")
     image_url = body.get("image_url") # <--- Get image URL from request body
 
+    # Optional metadata already present in the DB (all MET pieces here have images).
+    # We fold whatever is available into the prompt to give the curator real context
+    # instead of relying only on the artwork title + the image.
+    artist = body.get("artist")
+    culture = body.get("culture")
+    object_date = body.get("object_date")
+    region = body.get("region")
+
+    # Build a compact "known facts" line from the fields that are actually present,
+    # so we never feed the model empty/None values.
+    known_facts = []
+    if artist:
+        known_facts.append(f"Artist: {artist}")
+    if culture:
+        known_facts.append(f"Culture: {culture}")
+    if object_date:
+        known_facts.append(f"Date: {object_date}")
+    if region:
+        known_facts.append(f"Region: {region}")
+    facts_line = (
+        f"Known catalog details — {'; '.join(known_facts)}. "
+        if known_facts else ""
+    )
+
     # Hugging Face Router endpoint (OpenAI Compatible)
     API_URL = "https://router.huggingface.co/v1/chat/completions"
     headers = {
@@ -222,11 +246,15 @@ def get_ai_explanation():
                     {
                         "type": "text", 
                         "text": (
-                            f"You are a professional MET museum curator. Provide a sophisticated and "
-                            f"complete insight about the artwork '{artwork_name}' in 3 to 4 sentences, "
-                            f"focusing on its visual style and historical significance. Ensure your "
-                            f"response is fully concluded and does not exceed 500 words."
-                            f"DO NOT include word counts, labels, or any metadata in your response."
+                            f"You are a professional MET museum curator. Looking at the image, "
+                            f"provide a sophisticated insight about the artwork '{artwork_name}'. "
+                            f"{facts_line}"
+                            f"Weave the relevant catalog details into a natural narrative that "
+                            f"focuses on its visual style and historical significance. "
+                            f"Write exactly 3 to 4 complete sentences. Keep it concise and always "
+                            f"finish your final sentence — never stop mid-sentence or mid-word. "
+                            f"DO NOT include word counts, labels, headings, or any metadata in "
+                            f"your response."
                         )
                     },
                     {
@@ -236,7 +264,11 @@ def get_ai_explanation():
                 ]
             }
         ],
-        "max_tokens": 500
+        # 3-4 sentences fit comfortably under ~250 tokens; 400 gives enough
+        # headroom for the model to always close its final sentence instead of
+        # being truncated mid-phrase (the old 500-token cap vs. "500 words"
+        # prompt was contradictory and caused mid-sentence cut-offs).
+        "max_tokens": 400
     }
 
     try:
