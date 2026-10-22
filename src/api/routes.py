@@ -209,8 +209,12 @@ def get_ai_explanation():
     }
     
     # Payload for Vision-Language model (Qwen-VL) with multimodal input (text + image)
+    # NOTE: We intentionally DO NOT pin a provider suffix (e.g. ":novita").
+    # Novita stopped serving the 235B vision model via the HF Router, which broke
+    # the previous ":novita" pin. Leaving the model un-pinned lets the HF Router
+    # auto-route to whichever provider is currently live (deepinfra, etc.).
     payload = {
-        "model": "Qwen/Qwen3-VL-235B-A22B-Instruct:novita",
+        "model": "Qwen/Qwen3-VL-235B-A22B-Instruct",
         "messages": [
             {
                 "role": "user",
@@ -243,6 +247,8 @@ def get_ai_explanation():
             ai_text = result['choices'][0]['message']['content'].strip()
             return jsonify({"insight": ai_text}), 200
         else:
+            # Log the full router response so provider/model routing issues are
+            # diagnosable from the Heroku logs (`heroku logs --tail`).
             print(f"HF Router Error {response.status_code}: {response.text}")
             return jsonify({"error": "AI curator is busy observing the gallery"}), response.status_code
 
