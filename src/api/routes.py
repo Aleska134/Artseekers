@@ -288,9 +288,10 @@ def get_ai_explanation():
         mime_type = img_resp.headers.get("Content-Type", "image/jpeg").split(";")[0]
 
         # --- Gemini generateContent (vision) ---------------------------------
-        # gemini-2.5-flash-lite: the free tier's most generous model (~1,000
-        # requests/day). It performs genuine visual analysis of the image part.
-        model = "gemini-2.5-flash-lite"
+        # gemini-3.5-flash-lite: current free-tier lite model (gemini-2.5-flash-lite
+        # was retired for new users). It performs genuine visual analysis of the
+        # image part and is the most generous option on the free tier.
+        model = "gemini-3.5-flash-lite"
         API_URL = (
             f"https://generativelanguage.googleapis.com/v1beta/models/"
             f"{model}:generateContent"
