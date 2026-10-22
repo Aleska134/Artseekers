@@ -48,6 +48,10 @@ module.exports = {
         filename: 'index.html',
         favicon: 'favicon.jpg'
     }),
-    new Dotenv({ safe: true, systemvars: true })
+    // systemvars:true reads env vars from the system (Heroku Config Vars) at
+    // build time. `safe:true` removed — it required every var in .env.example
+    // (incl. backend-only keys) and treated empty values as missing, which
+    // broke the frontend build that only needs BACKEND_URL/BASENAME.
+    new Dotenv({ systemvars: true })
   ]
 };
