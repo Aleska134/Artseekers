@@ -1,6 +1,7 @@
-# # pipenv shell
-# # To populate backend python src/popdb.py & to run backend python src/app.py & the frontend npm run start
-# # Terminal -> python src/app.py
+# Seed the database from The Met Museum API.
+# Usage (from the repo root, with your virtualenv active and .env configured):
+#   PYTHONPATH=src python src/popdb.py
+# This only ADDS new artworks/departments; it never deletes existing data.
 
 import os
 import requests

@@ -6,13 +6,7 @@ const common = require('./webpack.common.js');
 const port = 3000;
 let publicUrl = `ws://localhost:${port}/ws`;
 
-//only for github
-if(process.env.GITPOD_WORKSPACE_URL){
-  const [schema, host] = process.env.GITPOD_WORKSPACE_URL.split('://');
-  publicUrl = `wss://${port}-${host}/ws`;
-}
-
-//only for codespaces
+// Support running the dev server inside GitHub Codespaces (HMR websocket URL).
 if(process.env.CODESPACE_NAME){
   publicUrl = `wss://${process.env.CODESPACE_NAME}-${port}.app.github.dev/ws`;
 }

@@ -7,13 +7,8 @@
 php_errorlog
 .log
 
-# do not ignore gitpod and render files
-!.gitpod.Dockerfile
-!.welcome
-!.devcontainer
-!.devcontainer/*
+# do not ignore deployment files
 !Dockerfile.render
-!.gitpod.yml
 !render.yml
 !.render-buildpacks.json
 
