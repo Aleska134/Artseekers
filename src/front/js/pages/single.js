@@ -31,6 +31,15 @@ export const Single = () => {
     const exhibit = store.artPieces.find(item => item.exhibit_museum_id == params.objectID);
 
     /**
+     * EFFECT: Preload cached insight
+     * If this artwork already has an AI analysis stored in the DB, show it
+     * immediately — no button press and no (paid) inference call needed.
+     */
+    useEffect(() => {
+        if (exhibit?.ai_insight) setAiInsight(exhibit.ai_insight);
+    }, [exhibit?.ai_insight]);
+
+    /**
      * HANDLER: Ask the AI Curator
      * Sends the text metadata AND the image URL to the Multimodal LLM.
      */
@@ -40,6 +49,7 @@ export const Single = () => {
         setAiLoading(true);
         // We pass the image URL so the model can perform "Vision Analysis"
         const insight = await actions.getAIInsight({
+            exhibit_museum_id: exhibit.exhibit_museum_id,
             name: exhibit.exhibit_name,
             artist: exhibit.artist_name,
             culture: exhibit.culture,

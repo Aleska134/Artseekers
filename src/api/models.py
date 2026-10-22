@@ -48,6 +48,10 @@ class Exhibits(db.Model):
     culture = db.Column(db.String(250), nullable=True)
     object_date = db.Column(db.String(250), nullable=True)
     artist_name = db.Column(db.Text, nullable=True)
+    # Cached AI curator analysis. Populated lazily on first request so repeated
+    # views of the same artwork are served from the DB instead of spending a new
+    # (paid) inference call each time.
+    ai_insight = db.Column(db.Text, nullable=True)
 
     favorites = db.relationship(
         'User',
@@ -71,6 +75,7 @@ class Exhibits(db.Model):
             "culture": self.culture,
             "primary_image_small" : self.primary_image_small,
             "artist_name" : self.artist_name,
+            "ai_insight" : self.ai_insight,
         }
 
 
