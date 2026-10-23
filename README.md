@@ -44,18 +44,18 @@ Emphasis: **Flask ↔ Neon PostgreSQL ↔ The Met Museum API** (plus optional AI
  
 ```mermaid
 flowchart TB
-  U[User Browser] -->|HTTPS / www.artseekers.dev| HEROKU[Heroku Dyno - Gunicorn WSGI]
- 
-  subgraph APP[Unified Service - Flask serves React + API]
-    UI[React Production Build - /public]
-    API[REST API - /api/...]
+  U["User Browser"] -->|"HTTPS · www.artseekers.dev"| HEROKU["Heroku Dyno · Gunicorn WSGI"]
+
+  subgraph APP["Unified Service · Flask serves React + API"]
+    UI["React Production Build · /public"]
+    API["REST API · /api/..."]
     HEROKU --> UI
     HEROKU --> API
   end
- 
-  API -->|SQLAlchemy| DB[(Neon PostgreSQL)]
-  API -->|Fetch artwork data| MET[The Met Museum API]
-  API -->|AI vision inference| GEMINI[Google Gemini - Vision]
+
+  API -->|"SQLAlchemy"| DB[("Neon PostgreSQL")]
+  API -->|"Fetch artwork data"| MET["The Met Museum API"]
+  API -->|"AI vision inference"| GEMINI["Google Gemini · Vision"]
 ```
  
 ---
