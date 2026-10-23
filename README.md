@@ -39,6 +39,7 @@
   prompt guessing from a title: the model performs real visual analysis of the image.
 ---
  
+<a id="system-design"></a>
 ## 🧩 System Design
 Emphasis: **Flask ↔ Neon PostgreSQL ↔ The Met Museum API** (plus optional AI inference).
  
@@ -109,6 +110,7 @@ All API calls are same-origin under `www.artseekers.dev` and routed internally v
  
 ---
  
+<a id="engineering-highlights"></a>
 ## 🧠 Engineering Highlights
  
 <details>
@@ -153,6 +155,7 @@ Scrypt password hashing + environment-driven configuration (`BACKEND_URL`, `DATA
 </details>
 ---
  
+<a id="quick-start"></a>
 ## ⚙️ Quick Start
 ### Prerequisites
 - Python 3.10+
