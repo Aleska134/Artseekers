@@ -2,7 +2,7 @@
   <h1>🖼️ ArtSeekers</h1>
   <p><strong>Full-stack museum explorer for The Met collection with multimodal AI artwork analysis</strong></p>
   <p>
-    <img src="https://img.shields.io/badge/Status-Live-success?style=flat-square" alt="Status">
+    <a href="https://stats.uptimerobot.com/Xe1tF6JalY"><img src="https://img.shields.io/badge/Status-Live-success?style=flat-square" alt="Status"></a>
     <img src="https://img.shields.io/badge/Stack-React%20%7C%20Flask%20%7C%20Postgres-blue?style=flat-square" alt="Stack">
     <img src="https://img.shields.io/badge/Hosted%20On-Heroku-430098?style=flat-square&logo=heroku&logoColor=white" alt="Heroku">
     <img src="https://img.shields.io/badge/DB-Neon%20PostgreSQL-00E5FF?style=flat-square" alt="Neon">
@@ -10,6 +10,8 @@
   </p>
   <p>
     <a href="https://www.artseekers.dev/"><strong>Live Site</strong></a>
+    •
+    <a href="https://stats.uptimerobot.com/Xe1tF6JalY"><strong>Status</strong></a>
     •
     <a href="#quick-start"><strong>Quick Start</strong></a>
     •
