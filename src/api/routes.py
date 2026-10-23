@@ -8,15 +8,13 @@ from flask import Flask, request, jsonify, Blueprint
 from sqlalchemy import text
 from api.models import db, User, Exhibits, Departments
 from api.utils import generate_sitemap, APIException
-from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from datetime import timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Blueprint('api', __name__)
 
-# Allow CORS requests to this API
-CORS(api)
+# CORS is configured centrally in app.py (restricted to known frontends).
 
 
 @api.route('/health', methods=['GET'])

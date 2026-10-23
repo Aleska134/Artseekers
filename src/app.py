@@ -14,8 +14,23 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-# Allow CORS for all domains on all routes
-CORS(app)
+# --- CORS -------------------------------------------------------------------
+# Restrict cross-origin API access to known frontends instead of allowing any
+# origin. Origins are read from the CORS_ALLOWED_ORIGINS env var (comma-
+# separated) so they can be adjusted on Heroku without a code change; the
+# defaults cover the production domain and the Heroku app URL.
+_default_origins = (
+    "https://www.artseekers.dev,"
+    "https://artseekers.dev,"
+    "https://artseekers-frontend-71f8dde762e3.herokuapp.com,"
+    "http://localhost:3000"
+)
+_allowed_origins = [
+    o.strip()
+    for o in os.getenv("CORS_ALLOWED_ORIGINS", _default_origins).split(",")
+    if o.strip()
+]
+CORS(app, resources={r"/api/*": {"origins": _allowed_origins}})
 
 # Configuration
 ENV = os.getenv("FLASK_DEBUG")
