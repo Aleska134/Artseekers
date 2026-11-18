@@ -37,6 +37,18 @@ class User(db.Model):
 
 
 
+class GuestAICall(db.Model):
+    """One new AI curator analysis requested by a visitor without an account.
+
+    Only a salted hash of the IP is stored (never the IP itself), and rows older
+    than two days are deleted, so this is a counter, not a visitor log.
+    """
+    __tablename__ = 'guest_ai_calls'
+    id = db.Column(db.Integer, primary_key=True)
+    ip_hash = db.Column(db.String(64), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, index=True)
+
+
 class Exhibits(db.Model):
     __tablename__ = 'exhibits'
     id = db.Column(db.Integer, primary_key=True)

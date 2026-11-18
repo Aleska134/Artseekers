@@ -3,13 +3,14 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 import os
 import base64
+import hashlib
 import requests
 from flask import Flask, request, jsonify, Blueprint
 from sqlalchemy import text
-from api.models import db, User, Exhibits, Departments
+from api.models import db, User, Exhibits, Departments, GuestAICall
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-from datetime import timedelta
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Blueprint('api', __name__)
@@ -206,8 +207,50 @@ def update_user_profile():
     db.session.commit()
     return jsonify(user.serialize()), 200
    
+# --- Free AI analyses for visitors without an account ------------------------
+# Reading a saved analysis is always free. A NEW analysis (a real Gemini call) is
+# limited for guests: a few per visitor per day, plus a total for all guests, so
+# nobody can drain the quota. Signed-in users are not limited here.
+GUEST_AI_PER_DAY = int(os.getenv("GUEST_AI_PER_DAY", "3"))
+GUEST_AI_TOTAL_PER_DAY = int(os.getenv("GUEST_AI_TOTAL_PER_DAY", "50"))
+
+
+def _client_ip():
+    # On Heroku the router appends the real client IP as the LAST entry of
+    # X-Forwarded-For; earlier entries can be forged by the client.
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",")[-1].strip()
+    return request.remote_addr or "unknown"
+
+
+def _guest_ip_hash():
+    salt = os.getenv("JWT_SECRET_KEY", "")
+    return hashlib.sha256(f"{salt}:{_client_ip()}".encode()).hexdigest()
+
+
+def _guest_usage(ip_hash):
+    """Returns (calls by this visitor, calls by all guests) in the last 24 hours."""
+    now = datetime.utcnow()
+    GuestAICall.query.filter(GuestAICall.created_at < now - timedelta(days=2)).delete()
+    since = now - timedelta(days=1)
+    recent = GuestAICall.query.filter(GuestAICall.created_at >= since)
+    return recent.filter_by(ip_hash=ip_hash).count(), recent.count()
+
+
+@api.route('/ai/guest-quota', methods=['GET'])
+def guest_ai_quota():
+    """How many free new analyses this visitor has left today (for the counter)."""
+    mine, everyone = _guest_usage(_guest_ip_hash())
+    db.session.commit()
+    remaining = max(GUEST_AI_PER_DAY - mine, 0)
+    if everyone >= GUEST_AI_TOTAL_PER_DAY:
+        remaining = 0
+    return jsonify({"limit": GUEST_AI_PER_DAY, "remaining": remaining}), 200
+
+
 @api.route('/ai/explain', methods=['POST'])
-@jwt_required()
+@jwt_required(optional=True)
 def get_ai_explanation():
     print("--- Multimodal AI Request Received (Gemini Vision) ---")
 
@@ -215,33 +258,46 @@ def get_ai_explanation():
     if not api_key:
         return jsonify({"error": "API Key missing"}), 500
 
-    body = request.get_json()
-    artwork_name = body.get("name")
-    image_url = body.get("image_url") # <--- Get image URL from request body
-    exhibit_museum_id = body.get("exhibit_museum_id") # used to cache the result
+    body = request.get_json(silent=True) or {}
+    exhibit_museum_id = body.get("exhibit_museum_id")
+    if exhibit_museum_id is None:
+        return jsonify({"error": "exhibit_museum_id is required"}), 400
 
     # --- CACHE LOOKUP ---------------------------------------------------------
     # If we already generated an insight for this artwork, return it straight from
     # Neon instead of spending another inference call. This is the single biggest
     # lever for making the free Gemini quota last: each artwork is analyzed once,
     # then served from the DB on every subsequent view.
-    exhibit = None
-    if exhibit_museum_id is not None:
-        exhibit = Exhibits.query.filter_by(exhibit_museum_id=exhibit_museum_id).first()
-    elif artwork_name:
-        exhibit = Exhibits.query.filter_by(exhibit_name=artwork_name).first()
+    exhibit = Exhibits.query.filter_by(exhibit_museum_id=exhibit_museum_id).first()
+    if exhibit is None:
+        return jsonify({"error": "Artwork not found"}), 404
 
-    if exhibit and exhibit.ai_insight:
+    if exhibit.ai_insight:
         print("--- Served AI insight from cache ---")
         return jsonify({"insight": exhibit.ai_insight, "cached": True}), 200
 
-    # Optional metadata already present in the DB (all MET pieces here have images).
-    # We fold whatever is available into the prompt to give the curator real context
-    # instead of relying only on the artwork title + the image.
-    artist = body.get("artist")
-    culture = body.get("culture")
-    object_date = body.get("object_date")
-    region = body.get("region")
+    # --- GUEST LIMIT ----------------------------------------------------------
+    is_guest = get_jwt_identity() is None
+    if is_guest:
+        ip_hash = _guest_ip_hash()
+        mine, everyone = _guest_usage(ip_hash)
+        if mine >= GUEST_AI_PER_DAY or everyone >= GUEST_AI_TOTAL_PER_DAY:
+            db.session.commit()  # keep the cleanup of old rows
+            return jsonify({
+                "error": "Free analyses used up for today",
+                "signup_required": True,
+            }), 429
+
+    # Everything sent to the model comes from OUR database, never from the
+    # request: the browser could otherwise choose the image we download (SSRF),
+    # put instructions in the title (prompt injection) or store a fake analysis
+    # on a real artwork for every visitor to see (cache poisoning).
+    artwork_name = exhibit.exhibit_name
+    image_url = exhibit.primary_image_small
+    artist = exhibit.artist_name
+    culture = exhibit.culture
+    object_date = exhibit.object_date
+    region = exhibit.region
 
     # Build a compact "known facts" line from the fields that are actually present,
     # so we never feed the model empty/None values.
@@ -338,11 +394,14 @@ def get_ai_explanation():
             # --- CACHE WRITE --------------------------------------------------
             # Persist the freshly generated insight so future requests for this
             # artwork are served from the DB (no more inference cost).
-            if exhibit:
-                exhibit.ai_insight = ai_text
-                db.session.commit()
+            exhibit.ai_insight = ai_text
+            reply = {"insight": ai_text, "cached": False}
+            if is_guest:
+                db.session.add(GuestAICall(ip_hash=ip_hash, created_at=datetime.utcnow()))
+                reply["guest_remaining"] = max(GUEST_AI_PER_DAY - mine - 1, 0)
+            db.session.commit()
 
-            return jsonify({"insight": ai_text, "cached": False}), 200
+            return jsonify(reply), 200
         else:
             # Log the full response so quota / auth / model issues are
             # diagnosable from the Heroku logs (`heroku logs --tail`).

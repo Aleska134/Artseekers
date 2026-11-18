@@ -15,6 +15,7 @@ export const Single = () => {
     // UI State for AI features
     const [aiLoading, setAiLoading] = useState(false);
     const [aiInsight, setAiInsight] = useState(null);
+    const [signupRequired, setSignupRequired] = useState(false);
 
     /**
      * EFFECT: Initial Data Sync
@@ -23,6 +24,8 @@ export const Single = () => {
     useEffect(() => {
         if (store.artPieces.length === 0) actions.getArtPiecesAndDepartments();
         if (store.token && !store.user?.name) actions.getUserProfile();
+        // Guests see how many free analyses they have left today
+        if (!store.token && store.guestAIRemaining === null) actions.getGuestAIQuota();
     }, [store.token]);
 
     /**
@@ -49,16 +52,11 @@ export const Single = () => {
 
         setAiLoading(true);
         // We pass the image URL so the model can perform "Vision Analysis"
-        const insight = await actions.getAIInsight({
-            exhibit_museum_id: exhibit.exhibit_museum_id,
-            name: exhibit.exhibit_name,
-            artist: exhibit.artist_name,
-            culture: exhibit.culture,
-            object_date: exhibit.object_date,
-            region: exhibit.region,
-            image_url: exhibit.primary_image_small 
-        });
-        setAiInsight(insight);
+        // The server looks up the artwork's image and details itself;
+        // we only send which artwork we mean.
+        const result = await actions.getAIInsight(exhibit.exhibit_museum_id);
+        if (result.signupRequired) setSignupRequired(true);
+        else setAiInsight(result.insight);
         setAiLoading(false);
     };
 
@@ -113,12 +111,13 @@ export const Single = () => {
                             {/* AI MULTIMODAL SECTION */}
                             <div className="ai-section mt-5 p-3 rounded" style={{ backgroundColor: "rgba(197, 160, 89, 0.1)", border: "1px solid #c5a059" }}>
                                 <h6 className="text-warning mb-2"><i className="fas fa-robot me-2"></i> AI VIRTUAL CURATOR (Gemini Vision)</h6>
-                                {!aiInsight && !store.token ? (
-                                    // Guests see saved analyses; asking for a new one needs an account,
-                                    // which also protects the AI quota from repeated anonymous calls.
-                                    <Link to="/login" className="btn btn-sm btn-warning w-100 fw-bold">
-                                        Sign in to ask the AI curator
-                                    </Link>
+                                {!aiInsight && !store.token && (signupRequired || store.guestAIRemaining === 0) ? (
+                                    // Guests get a few free new analyses per day (counted on the server).
+                                    <div className="small text-light">
+                                        <p className="mb-2">You have used your free AI analyses for today. Create a free account for the full experience: unlimited curator, favorites and your own profile.</p>
+                                        <Link to="/signup" className="btn btn-sm btn-warning w-100 fw-bold mb-2">Create a free account</Link>
+                                        <Link to="/login" className="text-warning">I already have an account</Link>
+                                    </div>
                                 ) : !aiInsight ? (
                                     <button 
                                         className="btn btn-sm btn-warning w-100 fw-bold" 
@@ -134,6 +133,12 @@ export const Single = () => {
                                 ) : (
                                     <p className="small italic text-light animate__animated animate__fadeIn">
                                         "{aiInsight}"
+                                    </p>
+                                )}
+                                {!store.token && typeof store.guestAIRemaining === "number" && !(signupRequired || (store.guestAIRemaining === 0 && !aiInsight)) && (
+                                    <p className="small text-light opacity-75 mt-2 mb-0">
+                                        {store.guestAIRemaining} of {store.guestAILimit} free analyses left today.{" "}
+                                        <Link to="/signup" className="text-warning">Create a free account</Link> for unlimited ones.
                                     </p>
                                 )}
                             </div>
