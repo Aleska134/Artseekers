@@ -9,7 +9,7 @@ export const Home = () => {
             <section className="hero-section text-center d-flex align-items-center justify-content-center">
                 <div className="hero-content">
                     <h1 className="animate-charcter main-title">ArtSeekers</h1>
-                    <p className="lead text-white px-5">Explore artworks from The Met in New York, and ask an AI curator what it sees in each piece.</p>
+                    <p className="lead text-white">Explore artworks from The Met in New York, and ask an AI curator what it sees in each piece.</p>
                     <Link to="/exhibits" className="btn btn-outline-light mt-3 me-2">Browse the Gallery</Link>
                     <a href="#about-us" className="btn btn-outline-light mt-3">How It Works</a>
                 </div>

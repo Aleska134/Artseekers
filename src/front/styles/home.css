@@ -130,3 +130,43 @@
     padding: 20px;
     margin: 20px;
 }
+
+/* 5. HERO READABILITY
+   The background photo is bright and busy in the middle, so white text got
+   lost on it. A soft dark veil over the hero and a translucent panel behind
+   the subtitle keep the same look while making every word readable. */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.25));
+}
+
+.hero-content .lead {
+    display: block;
+    max-width: 720px;
+    margin: 0.5rem auto 0;
+    padding: 0.9rem 1.4rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    font-size: 1.35rem;
+    font-weight: 500;
+    line-height: 1.5;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.hero-content .btn-outline-light {
+    background-color: rgba(0, 0, 0, 0.45);
+    border-width: 2px;
+    font-weight: 600;
+}
+
+.hero-content .btn-outline-light:hover,
+.hero-content .btn-outline-light:focus {
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+@media (max-width: 600px) {
+    .hero-content .lead {
+        font-size: 1.1rem;
+        padding: 0.75rem 1rem;
+    }
+}
