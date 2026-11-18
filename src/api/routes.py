@@ -124,20 +124,6 @@ def get_exhibits_and_departments():
         return jsonify({"error": str(e)}), 500
 
 
-@api.route('/users', methods=['GET'])
-def get_all_users():
-    users = User.query.all()
-    return jsonify([u.serialize() for u in users]), 200
-
-@api.route('/users/<int:user_id>', methods=['GET']) 
-def get_single_user(user_id): 
-    user = User.query.get(user_id)
-    
-    if user is None:
-        return jsonify({"message": "User not found"}), 404
-        
-    return jsonify(user.serialize()), 200
-
 @api.route('/single/<int:exhibit_id>', methods=['GET'])
 @jwt_required()
 def single_exhibit(exhibit_id):
