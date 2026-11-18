@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
+import AuthComponent from "../component/auth";
 import "../../styles/profile.css";
 
 export const Profile = () => {
@@ -70,6 +71,7 @@ export const Profile = () => {
     };
 
     return (
+        <AuthComponent>
         <div className="profile-page-container">
             <section className="gradient-custom-2">
                 <div className="container py-md-5">
@@ -228,5 +230,6 @@ export const Profile = () => {
                 </div>
             </section>
         </div>
+        </AuthComponent>
     );
 };

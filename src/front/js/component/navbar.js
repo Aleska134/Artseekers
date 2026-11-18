@@ -70,15 +70,17 @@ const Navbar = () => {
                             <Link to="/museums" className="nav-link">Museums</Link>
                         </li>
 
+                        {/* PUBLIC GALLERY LINKS: anyone can browse */}
+                        <li className="nav-item">
+                            <Link to="/exhibits" className="nav-link">Exhibits</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/departments" className="nav-link">Departments</Link>
+                        </li>
+
                         {/* PROTECTED NAVIGATION LINKS */}
                         {store.token && (
                             <>
-                                <li className="nav-item">
-                                    <Link to="/exhibits" className="nav-link">Exhibits</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to="/departments" className="nav-link">Departments</Link>
-                                </li>
                                 <li className="nav-item">
                                     <Link to="/profile" className="nav-link">
                                         <i className="fas fa-user-circle me-1"></i> Profile

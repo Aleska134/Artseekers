@@ -5,7 +5,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             artPieces: [],
             artDepartments: [],
             bool: false,
-            user: {} // Stores profile data and favorites
+            user: {}, // Stores profile data and favorites
+            guestAIRemaining: null, // Free AI analyses left today for visitors without an account
+            guestAILimit: 3
         },
         actions: {
             /**
@@ -133,34 +135,59 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
           
-            getAIInsight: async (artworkData) => {
+            /**
+             * Asks the AI curator about one artwork. Returns an object:
+             * { insight, guestRemaining, signupRequired }.
+             * Guests (no token) get a few free new analyses per day.
+             */
+            getAIInsight: async (exhibit_museum_id) => {
                 const store = getStore();
+                const headers = { "Content-Type": "application/json" };
+                if (store.token) headers.Authorization = `Bearer ${store.token}`;
                 try {
                     const response = await fetch(`${process.env.BACKEND_URL}/api/ai/explain`, {
                         method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${store.token}`
-                        },
-                        body: JSON.stringify(artworkData) // data: { name, artist, culture }
+                        headers,
+                        body: JSON.stringify({ exhibit_museum_id })
                     });
+                    const data = await response.json().catch(() => ({}));
 
                     if (response.ok) {
-                        const data = await response.json();
-                        return data.insight;
+                        if (typeof data.guest_remaining === "number") {
+                            setStore({ guestAIRemaining: data.guest_remaining });
+                        }
+                        return { insight: data.insight, guestRemaining: data.guest_remaining };
+                    } else if (response.status === 429 && data.signup_required) {
+                        setStore({ guestAIRemaining: 0 });
+                        return { signupRequired: true };
                     } else if (response.status === 503) {
-                        return "The AI Historian is currently waking up. Please try again in 10 seconds.";
+                        return { insight: "The AI Historian is currently waking up. Please try again in 10 seconds." };
                     } else if (response.status === 429) {
                         // Gemini free-tier rate/quota limit hit.
-                        return "The AI curator has reached its analysis quota for now. Please try again in a little while.";
+                        return { insight: "The AI curator has reached its analysis quota for now. Please try again in a little while." };
+                    } else if (response.status === 401) {
+                        getActions().logOut();
                     }
-                    return "The curator is currently unavailable. Please try again later.";
+                    return { insight: "The curator is currently unavailable. Please try again later." };
                 } catch (error) {
                     console.error("AI Insight Error:", error);
-                    return "Connection error with the AI engine.";
+                    return { insight: "Connection error with the AI engine." };
                 }
-            },  
-            
+            },
+
+            /** Loads how many free analyses a guest has left today. */
+            getGuestAIQuota: async () => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/ai/guest-quota`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ guestAIRemaining: data.remaining, guestAILimit: data.limit });
+                    }
+                } catch (error) {
+                    console.error("Guest quota error:", error);
+                }
+            },
+
             changePassword: async (oldPassword, newPassword) => {
                 const store = getStore();
                 try {

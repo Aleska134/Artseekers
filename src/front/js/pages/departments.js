@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
-import AuthComponent from "../component/auth";
 import "../../styles/departments.css";
 
 /**
@@ -23,7 +22,7 @@ export const Departments = () => {
     }, []);
 
     return (
-        <AuthComponent>
+        <>
             <div className="departments-wrapper" id="background">
                 <div className="container py-5">
                     <header className="text-center mb-5">
@@ -64,6 +63,6 @@ export const Departments = () => {
                     </div>
                 </div>
             </div>
-        </AuthComponent>
+        </>
     );
 };

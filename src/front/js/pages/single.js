@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 import "../../styles/single.css";
 
@@ -10,10 +10,12 @@ import "../../styles/single.css";
 export const Single = () => {
     const { store, actions } = useContext(Context);
     const params = useParams();
+    const navigate = useNavigate();
     
     // UI State for AI features
     const [aiLoading, setAiLoading] = useState(false);
     const [aiInsight, setAiInsight] = useState(null);
+    const [signupRequired, setSignupRequired] = useState(false);
 
     /**
      * EFFECT: Initial Data Sync
@@ -22,6 +24,8 @@ export const Single = () => {
     useEffect(() => {
         if (store.artPieces.length === 0) actions.getArtPiecesAndDepartments();
         if (store.token && !store.user?.name) actions.getUserProfile();
+        // Guests see how many free analyses they have left today
+        if (!store.token && store.guestAIRemaining === null) actions.getGuestAIQuota();
     }, [store.token]);
 
     /**
@@ -48,16 +52,11 @@ export const Single = () => {
 
         setAiLoading(true);
         // We pass the image URL so the model can perform "Vision Analysis"
-        const insight = await actions.getAIInsight({
-            exhibit_museum_id: exhibit.exhibit_museum_id,
-            name: exhibit.exhibit_name,
-            artist: exhibit.artist_name,
-            culture: exhibit.culture,
-            object_date: exhibit.object_date,
-            region: exhibit.region,
-            image_url: exhibit.primary_image_small 
-        });
-        setAiInsight(insight);
+        // The server looks up the artwork's image and details itself;
+        // we only send which artwork we mean.
+        const result = await actions.getAIInsight(exhibit.exhibit_museum_id);
+        if (result.signupRequired) setSignupRequired(true);
+        else setAiInsight(result.insight);
         setAiLoading(false);
     };
 
@@ -112,7 +111,14 @@ export const Single = () => {
                             {/* AI MULTIMODAL SECTION */}
                             <div className="ai-section mt-5 p-3 rounded" style={{ backgroundColor: "rgba(197, 160, 89, 0.1)", border: "1px solid #c5a059" }}>
                                 <h6 className="text-warning mb-2"><i className="fas fa-robot me-2"></i> AI VIRTUAL CURATOR (Gemini Vision)</h6>
-                                {!aiInsight ? (
+                                {!aiInsight && !store.token && (signupRequired || store.guestAIRemaining === 0) ? (
+                                    // Guests get a few free new analyses per day (counted on the server).
+                                    <div className="small text-light">
+                                        <p className="mb-2">You have used your free AI analyses for today. Create a free account for the full experience: unlimited curator, favorites and your own profile.</p>
+                                        <Link to="/signup" className="btn btn-sm btn-warning w-100 fw-bold mb-2">Create a free account</Link>
+                                        <Link to="/login" className="text-warning">I already have an account</Link>
+                                    </div>
+                                ) : !aiInsight ? (
                                     <button 
                                         className="btn btn-sm btn-warning w-100 fw-bold" 
                                         onClick={handleAIAsk} 
@@ -129,16 +135,26 @@ export const Single = () => {
                                         "{aiInsight}"
                                     </p>
                                 )}
+                                {!store.token && typeof store.guestAIRemaining === "number" && !(signupRequired || (store.guestAIRemaining === 0 && !aiInsight)) && (
+                                    <p className="small text-light opacity-75 mt-2 mb-0">
+                                        {store.guestAIRemaining} of {store.guestAILimit} free analyses left today.{" "}
+                                        <Link to="/signup" className="text-warning">Create a free account</Link> for unlimited ones.
+                                    </p>
+                                )}
                             </div>
 
                             {/* USER ACTIONS */}
                             <div className="d-flex flex-column gap-2 mt-4">
                                 <button 
                                     className={`btn ${isAlreadyFavorite ? "btn-danger" : "btn-outline-danger"} w-100 py-2`} 
-                                    onClick={() => isAlreadyFavorite ? actions.deleteFavorite(exhibit.exhibit_museum_id) : actions.addFavorite(exhibit.exhibit_museum_id)}
+                                    onClick={() => !store.token
+                                        ? navigate("/login")
+                                        : isAlreadyFavorite
+                                            ? actions.deleteFavorite(exhibit.exhibit_museum_id)
+                                            : actions.addFavorite(exhibit.exhibit_museum_id)}
                                 >
                                     <i className={`${isAlreadyFavorite ? "fas" : "far"} fa-heart me-2`}></i>
-                                    {isAlreadyFavorite ? "Remove from Collection" : "Add to Collection"}
+                                    {!store.token ? "Sign in to save to your collection" : isAlreadyFavorite ? "Remove from Collection" : "Add to Collection"}
                                 </button>
 
                                 <Link to="/exhibits">
