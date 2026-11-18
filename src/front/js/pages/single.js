@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 import "../../styles/single.css";
 
@@ -10,6 +10,7 @@ import "../../styles/single.css";
 export const Single = () => {
     const { store, actions } = useContext(Context);
     const params = useParams();
+    const navigate = useNavigate();
     
     // UI State for AI features
     const [aiLoading, setAiLoading] = useState(false);
@@ -112,7 +113,13 @@ export const Single = () => {
                             {/* AI MULTIMODAL SECTION */}
                             <div className="ai-section mt-5 p-3 rounded" style={{ backgroundColor: "rgba(197, 160, 89, 0.1)", border: "1px solid #c5a059" }}>
                                 <h6 className="text-warning mb-2"><i className="fas fa-robot me-2"></i> AI VIRTUAL CURATOR (Gemini Vision)</h6>
-                                {!aiInsight ? (
+                                {!aiInsight && !store.token ? (
+                                    // Guests see saved analyses; asking for a new one needs an account,
+                                    // which also protects the AI quota from repeated anonymous calls.
+                                    <Link to="/login" className="btn btn-sm btn-warning w-100 fw-bold">
+                                        Sign in to ask the AI curator
+                                    </Link>
+                                ) : !aiInsight ? (
                                     <button 
                                         className="btn btn-sm btn-warning w-100 fw-bold" 
                                         onClick={handleAIAsk} 
@@ -135,10 +142,14 @@ export const Single = () => {
                             <div className="d-flex flex-column gap-2 mt-4">
                                 <button 
                                     className={`btn ${isAlreadyFavorite ? "btn-danger" : "btn-outline-danger"} w-100 py-2`} 
-                                    onClick={() => isAlreadyFavorite ? actions.deleteFavorite(exhibit.exhibit_museum_id) : actions.addFavorite(exhibit.exhibit_museum_id)}
+                                    onClick={() => !store.token
+                                        ? navigate("/login")
+                                        : isAlreadyFavorite
+                                            ? actions.deleteFavorite(exhibit.exhibit_museum_id)
+                                            : actions.addFavorite(exhibit.exhibit_museum_id)}
                                 >
                                     <i className={`${isAlreadyFavorite ? "fas" : "far"} fa-heart me-2`}></i>
-                                    {isAlreadyFavorite ? "Remove from Collection" : "Add to Collection"}
+                                    {!store.token ? "Sign in to save to your collection" : isAlreadyFavorite ? "Remove from Collection" : "Add to Collection"}
                                 </button>
 
                                 <Link to="/exhibits">

@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../store/appContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Pagination from "../component/pagination"; 
-import AuthComponent from "../component/auth";
 import "../../styles/exhibit.css";
 
 export const Exhibits = () => {
     const { store, actions } = useContext(Context);
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const artPiecesPerPage = 10;
     const fallBackURL = "https://via.placeholder.com/300x400?text=Artwork+Not+Found";
@@ -33,7 +33,7 @@ export const Exhibits = () => {
     };
 
     return (
-        <AuthComponent>
+        <>
             <div className="exhibits-container pt-5 text-center" id="background">
                 <header className="mb-4">
                     <h1 className="display-4 fw-bold text-uppercase">Curated Exhibits</h1>
@@ -75,9 +75,12 @@ export const Exhibits = () => {
 
                                                 <button
                                                     className="btn btn-outline-danger border-0 p-1"
-                                                    onClick={() => isFavorited(item.exhibit_museum_id) 
-                                                        ? actions.deleteFavorite(item.exhibit_museum_id) 
-                                                        : actions.addFavorite(item.exhibit_museum_id)}
+                                                    onClick={() => !store.token
+                                                        ? navigate("/login")
+                                                        : isFavorited(item.exhibit_museum_id)
+                                                            ? actions.deleteFavorite(item.exhibit_museum_id)
+                                                            : actions.addFavorite(item.exhibit_museum_id)}
+                                                    aria-label={store.token ? "Save to your collection" : "Sign in to save to your collection"}
                                                 >
                                                     <i className={`${isFavorited(item.exhibit_museum_id) ? "fas" : "far"} fa-heart`}></i>
                                                 </button>
@@ -99,6 +102,6 @@ export const Exhibits = () => {
                     />
                 </div>
             </div>
-        </AuthComponent>
+        </>
     );
 };

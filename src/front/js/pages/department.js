@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
-import AuthComponent from "../component/auth";
 import "../../styles/exhibit.css";
 
 /**
@@ -11,6 +10,7 @@ import "../../styles/exhibit.css";
 export const Department = () => {
     const { store, actions } = useContext(Context);
     const params = useParams();
+    const navigate = useNavigate();
     const fallBackURL = "https://via.placeholder.com/300x400?text=Artwork+Not+Found";
 
     /**
@@ -45,7 +45,7 @@ export const Department = () => {
     };
 
     return (
-        <AuthComponent>
+        <>
             <div className="exhibits-container pt-5 text-center" id="background">
                 <header className="mb-5">
                     <span className="text-muted small letter-spacing-2">DEPARTMENT COLLECTION</span>
@@ -91,9 +91,12 @@ export const Department = () => {
 
                                             <button
                                                 className="btn btn-outline-danger border-0 p-1"
-                                                onClick={() => isFavorited(item.exhibit_museum_id) 
-                                                    ? actions.deleteFavorite(item.exhibit_museum_id) 
-                                                    : actions.addFavorite(item.exhibit_museum_id)}
+                                                onClick={() => !store.token
+                                                    ? navigate("/login")
+                                                    : isFavorited(item.exhibit_museum_id)
+                                                        ? actions.deleteFavorite(item.exhibit_museum_id)
+                                                        : actions.addFavorite(item.exhibit_museum_id)}
+                                                aria-label={store.token ? "Save to your collection" : "Sign in to save to your collection"}
                                             >
                                                 <i className={`${isFavorited(item.exhibit_museum_id) ? "fas" : "far"} fa-heart`}></i>
                                             </button>
@@ -114,6 +117,6 @@ export const Department = () => {
                     </Link>
                 </div>
             </div>
-        </AuthComponent>
+        </>
     );
 };
